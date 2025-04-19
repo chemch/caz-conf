@@ -1,4 +1,5 @@
 resources:
+  - alert-namespace.yaml
   - ../../base/alert-svc
 
 patches:
