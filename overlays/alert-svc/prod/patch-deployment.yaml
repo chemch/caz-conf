@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: alert-svc
 spec:
-  replicas: 8
+  replicas: 4
   template:
     spec:
       containers:
