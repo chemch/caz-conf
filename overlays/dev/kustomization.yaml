@@ -1,0 +1,8 @@
+resources:
+  - ../../base/alert-svc
+
+patches:
+  - target:
+      kind: Deployment
+      name: alert-svc
+    path: patch-alert-svc.yaml

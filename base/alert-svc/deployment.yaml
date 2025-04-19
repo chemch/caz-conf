@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-svc
+  template:
+    metadata:
+      labels:
+        app: alert-svc
+    spec:
+      containers:
+        - name: alert-svc
+          image: chemch/alert-svc:v1.0.0
+          ports:
+            - containerPort: 5002
