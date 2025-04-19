@@ -13,3 +13,5 @@ spec:
           env:
             - name: PORT
               value: "5004"
+            - name: DEBUG
+              value: "false"

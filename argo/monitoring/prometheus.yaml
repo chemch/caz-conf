@@ -15,7 +15,8 @@ spec:
           adminPassword: "changeme"
         prometheus:
           prometheusSpec:
-            serviceMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelector: {}
+            serviceMonitorNamespaceSelector: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

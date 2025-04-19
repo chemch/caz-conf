@@ -16,3 +16,6 @@ spec:
         - name: alert-svc
           image: chemch/alert-svc:latest
           imagePullPolicy: Always
+          env:
+            - name: DEBUG
+              value: "false"

@@ -4,6 +4,7 @@ metadata:
   name: intel-svc
 spec:
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 5008
       targetPort: 5008
