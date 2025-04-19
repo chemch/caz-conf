@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: detection-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: detection-svc
+  template:
+    metadata:
+      labels:
+        app: detection-svc
+    spec:
+      containers:
+        - name: detection-svc
+          image: chemch/detection-svc:latest
+          imagePullPolicy: Always

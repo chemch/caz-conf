@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: detection-svc-uat
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/chemch/caz-conf.git
+    targetRevision: main
+    path: overlays/detection-svc/uat
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: detection-uat
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

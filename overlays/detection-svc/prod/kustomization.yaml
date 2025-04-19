@@ -1,0 +1,18 @@
+resources:
+  - namespace.yaml
+  - ../../../base/detection-svc
+
+patches:
+  - target:
+      kind: Deployment
+      name: detection-svc
+    path: patch-deployment.yaml
+
+  - target:
+      kind: Service
+      name: detection-svc
+    path: patch-service.yaml
+
+images:
+  - name: chemch/detection-svc
+    newTag: prod

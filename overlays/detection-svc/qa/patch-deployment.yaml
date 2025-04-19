@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: detection-svc
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: detection-svc
+          ports:
+            - containerPort: 6004
+          env:
+            - name: PORT
+              value: "6004"
