@@ -22,14 +22,14 @@ SRC_BASE="${BASE_DIR}/${TEMPLATE_SERVICE}"
 DST_BASE="${BASE_DIR}/${NEW_SERVICE}"
 
 if [ ! -d "$SRC_BASE" ]; then
-  echo "❌ Template base not found: $SRC_BASE"
+  echo "Template base not found: $SRC_BASE"
   exit 1
 fi
 
 cp -r "$SRC_BASE" "$DST_BASE"
 find "$DST_BASE" -type f -exec sed -i '' "s/${TEMPLATE_SERVICE}/${NEW_SERVICE}/g" {} +
 
-echo "✅ Base copied from $TEMPLATE_SERVICE to $NEW_SERVICE"
+echo "Base copied from $TEMPLATE_SERVICE to $NEW_SERVICE"
 
 # === Overlays copy ===
 for ENV in "${ENVIRONMENTS[@]}"; do
@@ -37,7 +37,7 @@ for ENV in "${ENVIRONMENTS[@]}"; do
   DST_ENV_DIR="${OVERLAYS_DIR}/${NEW_SERVICE}/${ENV}"
 
   if [ ! -d "$SRC_ENV_DIR" ]; then
-    echo "❌ Template overlay not found: $SRC_ENV_DIR"
+    echo "Template overlay not found: $SRC_ENV_DIR"
     exit 1
   fi
 
@@ -51,7 +51,7 @@ for ENV in "${ENVIRONMENTS[@]}"; do
     mv "$FILE" "$DST_ENV_DIR/$NEW_NAME"
   done
 
-  echo "✅ Overlay copied: $ENV"
+  echo "Overlay copied: $ENV"
 done
 
 # === Argo CD app manifests ===
@@ -64,6 +64,6 @@ for ENV in "${ENVIRONMENTS[@]}"; do
   sed -i '' "s/${TEMPLATE_SERVICE}/${NEW_SERVICE}/g" "${DST_ARGO_DIR}/${ENV}.yaml"
 done
 
-echo "✅ Argo CD apps copied to argo/${NEW_SERVICE}/"
+echo "Argo CD apps copied to argo/${NEW_SERVICE}/"
 
-echo "🎉 Scaffolding complete for new service: ${NEW_SERVICE}"
+echo "Scaffolding complete for new service: ${NEW_SERVICE}"
