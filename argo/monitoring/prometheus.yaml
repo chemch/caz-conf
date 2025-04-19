@@ -10,8 +10,12 @@ spec:
     chart: kube-prometheus-stack
     targetRevision: 56.6.2
     helm:
-      valueFiles:
-        - monitoring/prometheus/values.yaml
+      values: |
+        grafana:
+          adminPassword: "changeme"
+        prometheus:
+          prometheusSpec:
+            serviceMonitorSelectorNilUsesHelmValues: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
