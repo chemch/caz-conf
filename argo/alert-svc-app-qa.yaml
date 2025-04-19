@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alert-svc-qa
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/chemch/caz-conf.git
+    targetRevision: main
+    path: overlays/qa
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: alert-qa
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

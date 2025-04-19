@@ -1,0 +1,13 @@
+resources:
+  - alert-namespace.yaml
+  - ../../base/alert-svc
+
+patches:
+  - target:
+      kind: Deployment
+      name: alert-svc
+    path: patch-alert-svc.yaml
+
+images:
+  - name: chemch/alert-svc
+    newTag: uat-v1.0.0
