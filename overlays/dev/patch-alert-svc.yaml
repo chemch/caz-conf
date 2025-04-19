@@ -1,11 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-svc
+  name: alert-svc-dev
 spec:
   replicas: 2
   template:
     spec:
       containers:
         - name: alert-svc
-          image: chemch/alert-svc:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5002
+          env:
+            - name: PORT
+              value: "5002"

@@ -1,5 +1,4 @@
-# overlays/dev/alert-namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: alert
+  name: alert-dev

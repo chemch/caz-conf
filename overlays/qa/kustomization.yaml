@@ -5,9 +5,9 @@ resources:
 patches:
   - target:
       kind: Deployment
-      name: alert-svc
+      name: alert-svc-qa
     path: patch-alert-svc.yaml
 
 images:
   - name: chemch/alert-svc
-    newTag: uat-v1.0.0
+    newTag: qa-v1.0.0

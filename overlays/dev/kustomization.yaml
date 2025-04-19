@@ -5,9 +5,9 @@ resources:
 patches:
   - target:
       kind: Deployment
-      name: alert-svc
+      name: alert-svc-dev
     path: patch-alert-svc.yaml
 
 images:
   - name: chemch/alert-svc
-    newTag: dev
+    newTag: dev-v1.0.0

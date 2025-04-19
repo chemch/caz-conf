@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-svc
+  name: alert-svc-qa
 spec:
   replicas: 2
   template:
@@ -9,3 +9,8 @@ spec:
       containers:
         - name: alert-svc
           imagePullPolicy: Always
+          ports:
+            - containerPort: 6002
+          env:
+            - name: PORT
+              value: "6002"
