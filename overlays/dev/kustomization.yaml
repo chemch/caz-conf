@@ -10,4 +10,4 @@ patches:
 
 images:
   - name: chemch/alert-svc
-    newTag: dev-v1.0.0
+    newTag: dev

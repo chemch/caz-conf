@@ -4,7 +4,13 @@ metadata:
   name: alert-svc-dev
 spec:
   replicas: 2
+  selector:
+    matchLabels:
+      app: alert-svc
   template:
+    metadata:
+      labels:
+        app: alert-svc
     spec:
       containers:
         - name: alert-svc
