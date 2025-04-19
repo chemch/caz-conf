@@ -16,5 +16,3 @@ spec:
         - name: alert-svc
           image: chemch/alert-svc:latest
           imagePullPolicy: Always
-          ports:
-            - containerPort: 5002

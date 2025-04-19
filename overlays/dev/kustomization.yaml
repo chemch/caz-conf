@@ -5,7 +5,7 @@ resources:
 patches:
   - target:
       kind: Deployment
-      name: alert-svc-dev
+      name: alert-svc
     path: patch-alert-svc.yaml
 
 images:
