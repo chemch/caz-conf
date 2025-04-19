@@ -9,6 +9,6 @@ spec:
     app: alert-svc
   ports:
     - protocol: TCP
-      port: 5002
-      targetPort: 5002
+      port: 0
+      targetPort: 0
   type: ClusterIP

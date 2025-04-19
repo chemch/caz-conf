@@ -6,7 +6,12 @@ patches:
   - target:
       kind: Deployment
       name: alert-svc
-    path: patch-alert-svc.yaml
+    path: patch-alert-deployment.yaml
+
+  - target:
+      kind: Service
+      name: alert-svc
+    path: patch-alert-service.yaml
 
 images:
   - name: chemch/alert-svc
