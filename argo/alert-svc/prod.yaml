@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: alert-svc-dev
+  name: alert-svc-prod
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/chemch/caz-conf.git
     targetRevision: main
-    path: overlays/dev
+    path: overlays/alert-svc/prod
   destination:
     server: https://kubernetes.default.svc
-    namespace: alert-dev
+    namespace: alert-prod
   syncPolicy:
     automated:
       prune: true

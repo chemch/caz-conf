@@ -1,6 +1,6 @@
 resources:
   - alert-namespace.yaml
-  - ../../base/alert-svc
+  - ../../../base/alert-svc
 
 patches:
   - target:
@@ -15,4 +15,4 @@ patches:
 
 images:
   - name: chemch/alert-svc
-    newTag: dev
+    newTag: qa
