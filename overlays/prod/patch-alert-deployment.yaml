@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-svc
+spec:
+  replicas: 5
+  template:
+    spec:
+      containers:
+        - name: alert-svc
+          ports:
+            - containerPort: 8002
+          env:
+            - name: PORT
+              value: "8002"

@@ -15,4 +15,4 @@ patches:
 
 images:
   - name: chemch/alert-svc
-    newTag: qa
+    newTag: prod
