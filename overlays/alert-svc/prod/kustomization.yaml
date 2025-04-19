@@ -1,17 +1,17 @@
 resources:
-  - alert-namespace.yaml
+  - namespace.yaml
   - ../../../base/alert-svc
 
 patches:
   - target:
       kind: Deployment
       name: alert-svc
-    path: patch-alert-deployment.yaml
+    path: patch-deployment.yaml
 
   - target:
       kind: Service
       name: alert-svc
-    path: patch-alert-service.yaml
+    path: patch-service.yaml
 
 images:
   - name: chemch/alert-svc

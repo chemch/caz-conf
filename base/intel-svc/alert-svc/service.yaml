@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: intel-svc
+  labels:
+    app: intel-svc
+spec:
+  selector:
+    app: intel-svc
+  type: ClusterIP

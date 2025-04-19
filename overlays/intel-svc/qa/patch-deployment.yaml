@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intel-svc
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: intel-svc
+          ports:
+            - containerPort: 6008
+          env:
+            - name: PORT
+              value: "6008"

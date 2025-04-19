@@ -1,18 +1,18 @@
 resources:
   - namespace.yaml
-  - ../../../base/alert-svc
+  - ../../../base/intel-svc
 
 patches:
   - target:
       kind: Deployment
-      name: alert-svc
+      name: intel-svc
     path: patch-deployment.yaml
 
   - target:
       kind: Service
-      name: alert-svc
+      name: intel-svc
     path: patch-service.yaml
 
 images:
-  - name: chemch/alert-svc
-    newTag: dev
+  - name: chemch/intel-svc
+    newTag: prod
