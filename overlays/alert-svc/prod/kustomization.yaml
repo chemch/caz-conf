@@ -1,7 +1,6 @@
 resources:
   - namespace.yaml
   - ../../../base/alert-svc
-  - rollout.yaml
 
 patches:
   - target:
