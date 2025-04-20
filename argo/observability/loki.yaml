@@ -11,7 +11,7 @@ spec:
     targetRevision: 6.29.0
     helm:
       valueFiles:
-        - helm-values/loki-values.yaml  # <-- relative to path below
+        - monitoring/helm-values/loki-values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
@@ -19,6 +19,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-  # Make sure this path matches the subdirectory in your repo
-  source:
-    path: monitoring
