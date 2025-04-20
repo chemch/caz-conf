@@ -9,6 +9,11 @@ spec:
     repoURL: https://falcosecurity.github.io/charts
     chart: falco
     targetRevision: 4.21.3
+    helm:
+      values: |
+        falco:
+          driver:
+            kind: ebpf
   destination:
     server: https://kubernetes.default.svc
     namespace: security
