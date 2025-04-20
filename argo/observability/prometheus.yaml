@@ -7,19 +7,8 @@ spec:
   project: default
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 70.7.0
-    helm:
-      values: |
-        nodeExporter:
-          enabled: false
-        pushgateway:
-          enabled: false
-        alertmanager:
-          enabled: false
-        grafana:
-          enabled: true
-          adminPassword: "changeme"
+    chart: prometheus
+    targetRevision: 27.11.0
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
@@ -27,8 +16,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-  ignoreDifferences:
-    - group: apiextensions.k8s.io
-      kind: CustomResourceDefinition
-      jsonPointers:
-        - /metadata/annotations
