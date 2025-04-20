@@ -13,6 +13,10 @@ spec:
       values: |
         nodeExporter:
           enabled: false
+        pushgateway:
+          enabled: false
+        alertmanager:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
