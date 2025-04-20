@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: alert-svc
 spec:
+  selector:
+    app: alert-svc
+    color: blue
   ports:
     - name: http
       protocol: TCP

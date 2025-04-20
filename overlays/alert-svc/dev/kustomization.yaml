@@ -16,3 +16,7 @@ patches:
 images:
   - name: chemch/alert-svc
     newTag: dev
+
+patchesStrategicMerge:
+  - patch-service.yaml
+  - disable-deployment-green.yaml
