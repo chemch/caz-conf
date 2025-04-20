@@ -1,27 +1,17 @@
-name: Deploy to Dev
+name: React to Source Develop Merge
 
 on:
-  push:
-    branches:
-      - develop
+  repository_dispatch:
+    types: [platform-merged-to-develop]
 
 jobs:
-  deploy-dev:
+  update-kustomize:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+      - name: Checkout caz-conf
+        uses: actions/checkout@v3
 
-      - name: Set up kubeconfig for dev
+      - name: Update Dev Overlays
         run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DEV }}" > ~/.kube/config
-
-      - name: Deploy to dev namespace
-        env:
-          ECR_REPO: ${{ secrets.ECR_REPO }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          kubectl set image deployment/flask-app flask-app=$ECR_REPO:$IMAGE_TAG -n dev
-          kubectl rollout status deployment/flask-app -n dev
+          echo "🎯 Platform merged to develop. Time to update conf repo."
