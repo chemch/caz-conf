@@ -9,10 +9,14 @@ spec:
     repoURL: https://grafana.github.io/helm-charts
     chart: loki
     targetRevision: 6.29.0
-    path: monitoring/loki   # <-- Must match the dummy folder
     helm:
-      valueFiles:
-        - ../helm-values/loki-values.yaml  # <-- Relative to `monitoring/loki`
+      values: |
+        loki:
+          auth_enabled: false
+        gateway:
+          enabled: false
+        test:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
