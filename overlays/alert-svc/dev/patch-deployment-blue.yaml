@@ -3,14 +3,7 @@ kind: Deployment
 metadata:
   name: alert-svc-blue
 spec:
-  selector:
-    matchLabels:
-      app: alert-svc
-      version: blue
   template:
-    metadata:
-      labels:
-        version: blue
     spec:
       containers:
         - name: alert-svc

@@ -5,7 +5,7 @@ metadata:
 spec:
   selector:
     app: alert-svc
-    color: blue
+    version: blue
   ports:
     - name: http
       protocol: TCP
