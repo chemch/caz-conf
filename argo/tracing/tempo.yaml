@@ -1,3 +1,4 @@
+# argo/observability/tempo.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -7,8 +8,17 @@ spec:
   project: default
   source:
     repoURL: https://grafana.github.io/helm-charts
-    chart: tempo-distributed
-    targetRevision: 1.38.1
+    chart: tempo
+    targetRevision: 1.21.0
+    helm:
+      values: |
+        service:
+          type: ClusterIP
+        persistence:
+          enabled: false
+        tempo:
+          metricsGenerator:
+            enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: tracing
