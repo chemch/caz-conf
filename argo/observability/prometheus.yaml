@@ -9,6 +9,26 @@ spec:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
     targetRevision: 70.6.0
+    helm:
+      parameters:
+        - name: prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues
+          value: "false"
+        - name: grafana.enabled
+          value: "false"
+        - name: prometheus.prometheusSpec.serviceMonitorSelector.matchLabels.release
+          value: prometheus-operator
+        - name: alertmanager.enabled
+          value: "false"
+        - name: kubeControllerManager.enabled
+          value: "false"
+        - name: kubeScheduler.enabled
+          value: "false"
+        - name: kubeEtcd.enabled
+          value: "false"
+        - name: kubeProxy.enabled
+          value: "false"
+        - name: defaultRules.create
+          value: "false"
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
