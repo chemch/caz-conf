@@ -3,6 +3,10 @@ kind: Deployment
 metadata:
   name: alert-svc-green
 spec:
+  selector:
+    matchLabels:
+      app: alert-svc
+      version: green
   template:
     metadata:
       labels:

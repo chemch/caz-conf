@@ -1,18 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-svc
+  name: PLACEHOLDER_NAME
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: alert-svc
+      version: PLACEHOLDER_VERSION
   template:
     metadata:
       labels:
         app: alert-svc
+        version: PLACEHOLDER_VERSION
     spec:
       containers:
         - name: alert-svc
           image: chemch/alert-svc:latest
           imagePullPolicy: Always
+          ports:
+            - containerPort: 5002

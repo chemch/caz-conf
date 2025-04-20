@@ -2,12 +2,16 @@ resources:
   - namespace.yaml
   - ../../../base/alert-svc
 
-# Only include the blue deployment patch to make blue active
 patches:
   - target:
       kind: Deployment
       name: alert-svc
     path: patch-deployment-blue.yaml
+
+  - target:
+      kind: Deployment
+      name: alert-svc
+    path: patch-deployment-green.yaml
 
   - target:
       kind: Service
