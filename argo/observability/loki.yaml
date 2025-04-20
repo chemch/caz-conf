@@ -9,9 +9,12 @@ spec:
     repoURL: https://grafana.github.io/helm-charts
     chart: loki
     targetRevision: 6.29.0
+    helm:
+      valueFiles:
+        - monitoring/helm-values/loki-values.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: observability
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true
