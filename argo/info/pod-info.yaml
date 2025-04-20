@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: whoami
+  name: podinfo
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://traefik.github.io/charts
-    chart: whoami
-    targetRevision: 1.8.7
+    repoURL: https://stefanprodan.github.io/podinfo
+    chart: podinfo
+    targetRevision: 6.8.0
   destination:
     server: https://kubernetes.default.svc
     namespace: info
