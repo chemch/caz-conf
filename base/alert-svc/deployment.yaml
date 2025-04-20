@@ -1,21 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-svc-blue
-  labels:
-    app: alert-svc
-    version: blue
+  name: alert-svc
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: alert-svc
-      version: blue
   template:
     metadata:
       labels:
         app: alert-svc
-        version: blue
     spec:
       containers:
         - name: alert-svc
