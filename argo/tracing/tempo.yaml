@@ -14,11 +14,30 @@ spec:
       values: |
         service:
           type: ClusterIP
+
         persistence:
           enabled: false
+
         tempo:
           metricsGenerator:
             enabled: true
+          searchEnabled: true  # Enables trace search in Grafana
+
+        otlp:
+          http:
+            enabled: true
+            port: 4318
+          grpc:
+            enabled: true
+            port: 4317
+
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: tracing
