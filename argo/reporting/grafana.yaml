@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 8.12.1
+    helm:
+      values: |
+        adminUser: admin
+        adminPassword: initial
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: reporting
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
