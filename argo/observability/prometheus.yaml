@@ -18,7 +18,7 @@ spec:
         alertmanager:
           enabled: false
         grafana:
-          enabled: false
+          enabled: true
           adminPassword: "changeme"
   destination:
     server: https://kubernetes.default.svc
