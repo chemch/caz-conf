@@ -6,11 +6,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-alert-svc:
-    name: Deploy alert-svc to EKS
+  deploy-detection-svc:
+    name: Deploy detection-svc to EKS
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
 
     steps:
@@ -31,14 +32,14 @@ jobs:
             --region "$AWS_REGION" \
             --name "$EKS_CLUSTER_NAME"
 
+      - name: Make scripts executable
+        run: chmod +x ./scripts/*.sh
+
       - name: Update detection-svc image tag in Kustomize overlay
         run: |
           TAG=${{ github.event.client_payload.tag || 'latest' }}
-          echo "Updating detection-svc image tag to: $TAG"
-          sed -i "s|\(newTag:\s*\).*|\1$TAG|" overlays/detection-svc/dev/kustomization.yaml
-
-      - name: Make All Scripts executable
-        run: chmod +x ./scripts/*.sh
+          echo "Updating image to tag: $TAG"
+          ./scripts/set-image.sh detection-svc "$TAG"
 
       - name: Deploy detection-svc with custom script
-        run: ${{ github.workspace }}/scripts/start-service.sh detection-svc dev
+        run: ./scripts/start-service.sh detection-svc dev
