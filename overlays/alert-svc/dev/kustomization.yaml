@@ -1,8 +1,8 @@
-# overlays/alert-svc/dev/kustomization.yaml
 resources:
   - namespace.yaml
   - ../../../base/alert-svc
 
+# Only include the blue deployment patch to make blue active
 patches:
   - target:
       kind: Deployment

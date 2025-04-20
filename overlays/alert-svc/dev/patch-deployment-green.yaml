@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-svc-blue
+  name: alert-svc-green
 spec:
   template:
     metadata:
       labels:
-        version: blue
+        version: green
     spec:
       containers:
         - name: alert-svc
