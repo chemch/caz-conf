@@ -7,22 +7,8 @@ spec:
   project: default
   source:
     repoURL: https://grafana.github.io/helm-charts
-    chart: tempo
+    chart: tempo-distributed
     targetRevision: 1.38.1
-    helm:
-      values: |
-        persistence:
-          enabled: false
-        tempo:
-          retention: 24h
-        traces:
-          otlp:
-            http:
-              enabled: true
-            grpc:
-              enabled: true
-        metricsGenerator:
-          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: tracing
