@@ -9,6 +9,10 @@ spec:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: prometheus
     targetRevision: 27.11.0
+    helm:
+      values: |
+        nodeExporter:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
