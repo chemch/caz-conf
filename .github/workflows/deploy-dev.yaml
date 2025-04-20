@@ -3,15 +3,29 @@ name: Deploy Dev
 on:
   repository_dispatch:
     types: [start-dev-deployment]
+  workflow_dispatch:
 
 jobs:
-  update-kustomize:
+  deploy-alert-svc:
+    name: Deploy alert-svc to EKS
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
 
     steps:
-      - name: Checkout caz-conf
+      - name: Checkout caz-conf repo
         uses: actions/checkout@v3
 
-      - name: Update Dev Overlays
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Update kubeconfig for EKS
         run: |
-          echo "🎯 Platform merged to develop. Time to update conf repo."
+          aws eks update-kubeconfig \
+            --region "$AWS_REGION" \
+            --name "$EKS_CLUSTER_NAME"
