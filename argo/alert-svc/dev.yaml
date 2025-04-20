@@ -14,5 +14,4 @@ spec:
     namespace: alert-dev
   syncPolicy:
     automated:
-      prune: true
       selfHeal: true

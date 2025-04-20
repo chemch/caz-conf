@@ -5,7 +5,6 @@ metadata:
   labels:
     app: alert-svc
     version: green
-    env: active
 spec:
   replicas: 1
   selector:
@@ -17,12 +16,8 @@ spec:
       labels:
         app: alert-svc
         version: green
-        env: active
     spec:
       containers:
         - name: alert-svc
-          image: chemch/alert-svc:green
+          image: chemch/alert-svc:latest
           imagePullPolicy: Always
-          env:
-            - name: DEBUG
-              value: "false"
