@@ -40,11 +40,5 @@ jobs:
       - name: Make All Scripts executable
         run: chmod +x ./scripts/*.sh
 
-      - name: Ensure detection-dev namespace exists
-        run: |
-          kubectl get namespace detection-dev || kubectl create namespace detection-dev
-
-      - name: Deploy detection-svc with canary rollout
-        run: |
-          kubectl apply -k overlays/detection-svc/dev/ --namespace detection-dev
-      
+      - name: Deploy detection-svc with custom script
+        run: ${{ github.workspace }}/scripts/start-service.sh detection-svc dev
