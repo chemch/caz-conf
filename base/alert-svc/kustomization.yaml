@@ -1,4 +1,3 @@
 resources:
-  - ../detection-svc/deployment-canary.yaml
   - deployment-green.yaml
   - service.yaml
