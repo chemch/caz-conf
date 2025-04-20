@@ -13,8 +13,6 @@ patches:
       name: alert-svc
     path: patch-service.yaml
 
-  - path: disable-deployment-green.yaml
-
 images:
   - name: chemch/alert-svc
     newTag: dev
