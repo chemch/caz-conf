@@ -16,24 +16,24 @@ else
   ENVIRONMENTS=("dev" "qa" "uat" "prod")
 fi
 
-echo "🚀 Starting Argo CD applications for service: $SERVICE"
+echo "Starting Argo CD applications for service: $SERVICE"
 
 for ENV in "${ENVIRONMENTS[@]}"; do
   YAML="${BASE_DIR}/argo/${SERVICE}/${ENV}.yaml"
-  NAMESPACE="${SERVICE//-svc/}-$ENV"  # 🔥 This turns detection-svc + dev → detection-dev
+  NAMESPACE="${SERVICE//-svc/}-$ENV"
 
-  echo "🔍 Checking namespace: $NAMESPACE"
+  echo "Checking namespace: $NAMESPACE"
   kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || {
-    echo "📦 Creating namespace: $NAMESPACE"
+    echo "Creating namespace: $NAMESPACE"
     kubectl create namespace "$NAMESPACE"
   }
 
   if [ -f "$YAML" ]; then
-    echo "✅ Applying $YAML"
+    echo "Applying $YAML"
     kubectl apply -f "$YAML"
   else
-    echo "⚠️  Skipping $ENV: $YAML not found"
+    echo "Skipping $ENV: $YAML not found"
   fi
 done
 
-echo "✅ Done: Argo CD applications started for $SERVICE"
+echo "Done: Argo CD applications started for $SERVICE"

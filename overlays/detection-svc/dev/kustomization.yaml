@@ -14,5 +14,5 @@ patches:
     path: patch-service.yaml
 
 images:
-  - name: chemch/detection-svc
-    newTag: dev
+  - name: 211125540194.dkr.ecr.us-east-1.amazonaws.com/detection-svc
+    newTag: latest
