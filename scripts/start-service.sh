@@ -20,7 +20,7 @@ echo "🚀 Starting Argo CD applications for service: $SERVICE"
 
 for ENV in "${ENVIRONMENTS[@]}"; do
   YAML="${BASE_DIR}/argo/${SERVICE}/${ENV}.yaml"
-  NAMESPACE="${SERVICE}-${ENV}"
+  NAMESPACE="${SERVICE//-svc/}-$ENV"  # 🔥 This turns detection-svc + dev → detection-dev
 
   echo "🔍 Checking namespace: $NAMESPACE"
   kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || {
