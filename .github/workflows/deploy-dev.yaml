@@ -1,8 +1,8 @@
-name: React to Source Develop Merge
+name: Deploy Dev
 
 on:
   repository_dispatch:
-    types: [platform-merged-to-develop]
+    types: [start-dev-deployment]
 
 jobs:
   update-kustomize:
