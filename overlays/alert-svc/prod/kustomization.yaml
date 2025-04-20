@@ -1,13 +1,9 @@
 resources:
   - namespace.yaml
   - ../../../base/alert-svc
+  - rollout.yaml
 
 patches:
-  - target:
-      kind: Deployment
-      name: alert-svc
-    path: patch-deployment.yaml
-
   - target:
       kind: Service
       name: alert-svc
