@@ -1,23 +1,40 @@
 #!/bin/bash
 set -e
 
-if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <namespace> <color>"
-  echo "Example: $0 alert-dev green"
+SERVICE=$1
+ENV=$2
+REPO_ROOT=$(git rev-parse --show-toplevel)
+PATCH_PATH="${REPO_ROOT}/overlays/${SERVICE}/${ENV}/patch-service.yaml"
+
+if [ -z "$SERVICE" ] || [ -z "$ENV" ]; then
+  echo "Usage: $0 <service-name> <environment>"
   exit 1
 fi
 
-NAMESPACE=$1
-COLOR=$2
-
-if [[ "$COLOR" != "blue" && "$COLOR" != "green" ]]; then
-  echo "Error: color must be 'blue' or 'green'"
+if [ ! -f "$PATCH_PATH" ]; then
+  echo "patch-service.yaml not found at $PATCH_PATH"
   exit 1
 fi
 
-echo "Switching alert-svc to version: $COLOR in namespace: $NAMESPACE"
+# Detect current version
+CURRENT=$(yq '.spec.selector.version' "$PATCH_PATH")
+if [ "$CURRENT" == "blue" ]; then
+  NEXT="green"
+else
+  NEXT="blue"
+fi
 
-kubectl patch service alert-svc -n "$NAMESPACE" \
-  -p "{\"spec\": {\"selector\": {\"app\": \"alert-svc\", \"version\": \"$COLOR\"}}}"
+echo "Switching $SERVICE in $ENV from $CURRENT to $NEXT..."
 
-echo "Service updated to route traffic to version: $COLOR"
+# Update the patch-service.yaml
+yq eval ".spec.selector.version = \"$NEXT\"" -i "$PATCH_PATH"
+
+# Git commit the change
+cd "$REPO_ROOT"
+git add "$PATCH_PATH"
+git commit -m "chore(${SERVICE}-${ENV}): switch color to $NEXT"
+
+echo "Service selector updated to $NEXT. Push to apply:"
+echo ""
+echo "    git push"
+echo ""
