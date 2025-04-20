@@ -31,8 +31,8 @@ jobs:
             --region "$AWS_REGION" \
             --name "$EKS_CLUSTER_NAME"
 
-      - name: Update detection-svc image tag
+      - name: Update detection-svc image tag in Kustomize overlay
         run: |
           TAG=${{ github.event.client_payload.tag || 'latest' }}
-          echo "Updating detection-svc to tag: $TAG"
-          sed -i "s|\(newTag:\s*\).*|\1$TAG|" overlays/dev/detection-svc/kustomization.yaml
+          echo "🛠️ Updating detection-svc image tag to: $TAG"
+          sed -i "s|\(newTag:\s*\).*|\1$TAG|" overlays/detection-svc/dev/kustomization.yaml
