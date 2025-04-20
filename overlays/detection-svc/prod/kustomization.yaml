@@ -4,11 +4,6 @@ resources:
 
 patches:
   - target:
-      kind: Deployment
-      name: detection-svc
-    path: patch-deployment.yaml
-
-  - target:
       kind: Service
       name: detection-svc
     path: patch-service.yaml

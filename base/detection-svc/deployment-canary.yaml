@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: detection-svc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: detection-svc
+  template:
+    metadata:
+      labels:
+        app: detection-svc
+    spec:
+      containers:
+        - name: detection-svc
+          image: chemch/detection-svc:latest
+          ports:
+            - containerPort: 5004
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: 30s }
+        - setWeight: 50
+        - pause: { duration: 60s }
+        - setWeight: 100
