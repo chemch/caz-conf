@@ -1,0 +1,27 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up kubeconfig for prod
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_PROD }}" > ~/.kube/config
+
+      - name: Deploy to prod namespace
+        env:
+          ECR_REPO: ${{ secrets.ECR_REPO }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          kubectl set image deployment/flask-app flask-app=$ECR_REPO:$IMAGE_TAG -n prod
+          kubectl rollout status deployment/flask-app -n prod

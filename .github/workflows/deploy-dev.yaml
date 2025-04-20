@@ -1,0 +1,27 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up kubeconfig for dev
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DEV }}" > ~/.kube/config
+
+      - name: Deploy to dev namespace
+        env:
+          ECR_REPO: ${{ secrets.ECR_REPO }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          kubectl set image deployment/flask-app flask-app=$ECR_REPO:$IMAGE_TAG -n dev
+          kubectl rollout status deployment/flask-app -n dev
