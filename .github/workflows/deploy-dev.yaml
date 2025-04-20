@@ -36,3 +36,8 @@ jobs:
           TAG=${{ github.event.client_payload.tag || 'latest' }}
           echo "🛠️ Updating detection-svc image tag to: $TAG"
           sed -i "s|\(newTag:\s*\).*|\1$TAG|" overlays/detection-svc/dev/kustomization.yaml
+
+      - name: Deploy detection-svc with canary rollout
+        run: |
+          kubectl apply -k overlays/detection-svc/dev/ --namespace dev
+      
