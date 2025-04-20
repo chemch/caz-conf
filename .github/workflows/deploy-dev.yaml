@@ -34,7 +34,7 @@ jobs:
       - name: Update detection-svc image tag in Kustomize overlay
         run: |
           TAG=${{ github.event.client_payload.tag || 'latest' }}
-          echo "🛠️ Updating detection-svc image tag to: $TAG"
+          echo "Updating detection-svc image tag to: $TAG"
           sed -i "s|\(newTag:\s*\).*|\1$TAG|" overlays/detection-svc/dev/kustomization.yaml
 
       - name: Make All Scripts executable

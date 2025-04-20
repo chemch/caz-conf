@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: detection-svc
-          image: chemch/detection-svc:latest
+#          image: chemch/detection-svc:latest
+          image: 211125540194.dkr.ecr.us-east-1.amazonaws.com/detection-svc:latest
           ports:
             - containerPort: 5004
   strategy:
