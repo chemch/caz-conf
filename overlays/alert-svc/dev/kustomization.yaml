@@ -1,6 +1,7 @@
 resources:
-  - namespace.yaml
-  - ../../../base/alert-svc
+  - deployment-blue.yaml
+  - deployment-green.yaml
+  - service.yaml
 
 patches:
   - path: patch-deployment-blue.yaml
