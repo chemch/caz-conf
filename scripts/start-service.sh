@@ -14,11 +14,19 @@ echo "Starting Argo CD applications for service: $SERVICE"
 
 for ENV in "${ENVIRONMENTS[@]}"; do
   YAML="${BASE_DIR}/argo/${SERVICE}/${ENV}.yaml"
+  NAMESPACE="${SERVICE}-${ENV}"
+
+  echo "Checking namespace: $NAMESPACE"
+  kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || {
+    echo "Creating namespace: $NAMESPACE"
+    kubectl create namespace "$NAMESPACE"
+  }
+
   if [ -f "$YAML" ]; then
     echo "Applying $YAML"
     kubectl apply -f "$YAML"
   else
-    echo "⚠Skipping $ENV: $YAML not found"
+    echo "Skipping $ENV: $YAML not found"
   fi
 done
 
