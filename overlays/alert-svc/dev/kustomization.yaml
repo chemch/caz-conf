@@ -1,3 +1,4 @@
+# overlays/alert-svc/dev/kustomization.yaml
 resources:
   - namespace.yaml
   - ../../../base/alert-svc
@@ -5,7 +6,7 @@ resources:
 patches:
   - target:
       kind: Deployment
-      name: alert-svc-blue
+      name: alert-svc
     path: patch-deployment-blue.yaml
 
   - target:

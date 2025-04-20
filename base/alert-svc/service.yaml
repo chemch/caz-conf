@@ -7,5 +7,4 @@ metadata:
 spec:
   selector:
     app: alert-svc
-    version: green
   type: ClusterIP
