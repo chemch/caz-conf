@@ -22,15 +22,16 @@ spec:
         server:
           persistentVolume:
             enabled: false
-          serviceMonitor:
-            enabled: true
-          serviceMonitorSelector:
-            matchLabels:
-              release: prometheus
-          serviceMonitorNamespaceSelector:
-            matchNames:
-              - alert-dev
-              - observability
+          service:
+            type: ClusterIP
+          extraScrapeConfigs: |
+            - job_name: 'alert-svc'
+              kubernetes_sd_configs:
+                - role: endpoints
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+                  action: keep
+                  regex: alert-dev;alert-svc;http
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
