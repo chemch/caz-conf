@@ -18,6 +18,11 @@ spec:
           type: memory
         ingress:
           enabled: false
+        query:
+          enabled: true
+          service:
+            type: ClusterIP
+            port: 16686
   destination:
     server: https://kubernetes.default.svc
     namespace: tracing
