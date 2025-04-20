@@ -11,9 +11,9 @@ spec:
     targetRevision: 70.7.0
     helm:
       values: |
-        prometheus-node-exporter:
+        nodeExporter:
           enabled: false
-        prometheus-pushgateway:
+        pushgateway:
           enabled: false
         alertmanager:
           enabled: false
