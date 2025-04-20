@@ -1,30 +1,23 @@
 #!/bin/bash
-
-# Usage: ./switch-color.sh <service-name> <environment> <new-color>
-# Example: ./switch-color.sh alert-svc dev green
-
 set -e
 
-SERVICE="$1"
-ENV="$2"
-NEW_COLOR="$3"
-
-if [[ -z "$SERVICE" || -z "$ENV" || -z "$NEW_COLOR" ]]; then
-  echo "Usage: $0 <service-name> <environment> <new-color>"
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 <namespace> <color>"
+  echo "Example: $0 alert-dev green"
   exit 1
 fi
 
-PATCH_FILE="overlays/${SERVICE}/${ENV}/patch-service.yaml"
+NAMESPACE=$1
+COLOR=$2
 
-if [[ ! -f "$PATCH_FILE" ]]; then
-  echo "Error: Patch file not found at $PATCH_FILE"
+if [[ "$COLOR" != "blue" && "$COLOR" != "green" ]]; then
+  echo "Error: color must be 'blue' or 'green'"
   exit 1
 fi
 
-# Update color label in patch-service.yaml
-sed -i '' "s/color: .*/color: ${NEW_COLOR}/" "$PATCH_FILE"
+echo "Switching alert-svc to version: $COLOR in namespace: $NAMESPACE"
 
-# Reapply with kubectl (optional)
-echo "Updated $PATCH_FILE to use color: $NEW_COLOR"
-echo "Reapplying configuration..."
-kubectl apply -k overlays/${SERVICE}/${ENV}
+kubectl patch service alert-svc -n "$NAMESPACE" \
+  -p "{\"spec\": {\"selector\": {\"app\": \"alert-svc\", \"version\": \"$COLOR\"}}}"
+
+echo "Service updated to route traffic to version: $COLOR"
