@@ -12,9 +12,12 @@ spec:
     metadata:
       labels:
         app: alert-svc
-    spec:
-      containers:
-        - name: alert-svc
+  spec:
+    containers:
+      - name: alert-svc
+        image: chemch/alert-svc:prod  # Canary image
+        ports:
+          - containerPort: 8002
   strategy:
     canary:
       steps:
