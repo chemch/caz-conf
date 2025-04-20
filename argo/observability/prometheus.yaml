@@ -22,6 +22,15 @@ spec:
         server:
           persistentVolume:
             enabled: false
+          serviceMonitor:
+            enabled: true
+          serviceMonitorSelector:
+            matchLabels:
+              release: prometheus
+          serviceMonitorNamespaceSelector:
+            matchNames:
+              - alert-dev
+              - observability
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
