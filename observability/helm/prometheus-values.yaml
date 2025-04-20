@@ -1,0 +1,8 @@
+alertmanager:
+  enabled: true
+
+server:
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 500m
