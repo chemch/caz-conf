@@ -12,7 +12,3 @@ patches:
       kind: Service
       name: detection-svc
     path: patch-service.yaml
-
-images:
-  - name: chemch/detection-svc
-    newTag: qa

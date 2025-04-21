@@ -1,0 +1,18 @@
+resources:
+  - namespace.yaml
+  - ../../../base/intel-svc
+
+patches:
+  - target:
+      kind: Deployment
+      name: intel-svc
+    path: patch-deployment.yaml
+
+  - target:
+      kind: Service
+      name: intel-svc
+    path: patch-service.yaml
+
+images:
+  - name: chemch/intel-svc
+    newTag: dev

@@ -12,3 +12,7 @@ patches:
       kind: Service
       name: alert-svc
     path: patch-service.yaml
+
+images:
+  - name: chemch/alert-svc
+    newTag: latest
