@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 SERVICE="$1"
-SPECIFIC_ENV="$2"
+SPECIFIC_ENV="${2:-}"
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if [ -n "$SPECIFIC_ENV" ]; then
@@ -21,6 +21,10 @@ echo "Starting Argo CD applications for service: $SERVICE"
 for ENV in "${ENVIRONMENTS[@]}"; do
   YAML="${BASE_DIR}/argo/${SERVICE}/${ENV}.yaml"
   NAMESPACE="${SERVICE//-svc/}-$ENV"
+
+  echo "Expected Rollout/Deployment Info:"
+  echo "   → Name:      $SERVICE"
+  echo "   → Namespace: $NAMESPACE"
 
   echo "Checking namespace: $NAMESPACE"
   kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || {
