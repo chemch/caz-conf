@@ -27,41 +27,41 @@ while true; do
   fi
 
   if (( ELAPSED >= TIMEOUT_SECONDS )); then
-    echo "❌ Timeout: No Rollout or Deployment '$NAME' found in '$NAMESPACE'"
+    echo "Timeout: No Rollout or Deployment '$NAME' found in '$NAMESPACE'"
     exit 1
   fi
 
-  echo "⏳ Waiting for '$NAME' to appear in '$NAMESPACE'... (${ELAPSED}s)"
+  echo "Waiting for '$NAME' to appear in '$NAMESPACE'... (${ELAPSED}s)"
   sleep "$SLEEP_INTERVAL"
   ELAPSED=$((ELAPSED + SLEEP_INTERVAL))
 done
 
-echo "✅ Found $TYPE: $NAME in $NAMESPACE"
+echo "Found $TYPE: $NAME in $NAMESPACE"
 
 # Wait for rollout/deployment to complete
 if [ "$TYPE" = "Rollout" ]; then
-  echo "⏳ Waiting for Argo Rollout to complete..."
+  echo "Waiting for Argo Rollout to complete..."
   if ! kubectl-argo-rollouts status rollout "$NAME" -n "$NAMESPACE" --timeout 5m; then
-    echo "⚠️  Status command exited with non-zero — checking actual rollout health..."
+    echo "Status command exited with non-zero — checking actual rollout health..."
 
     HEALTH=$(kubectl get rollout "$NAME" -n "$NAMESPACE" -o=jsonpath='{.status.conditions[?(@.type=="Progressing")].reason}')
     if [[ "$HEALTH" == "NewReplicaSetAvailable" ]]; then
-      echo "✅ Rollout is Healthy. Proceeding."
+      echo "Rollout is Healthy. Proceeding."
     else
-      echo "❌ Rollout failed or is stuck. Reason: $HEALTH"
-      echo "🔍 Rollout details:"
+      echo "Rollout failed or is stuck. Reason: $HEALTH"
+      echo "Rollout details:"
       kubectl-argo-rollouts get rollout "$NAME" -n "$NAMESPACE"
       exit 1
     fi
   fi
 else
-  echo "⏳ Waiting for Kubernetes Deployment to complete..."
+  echo "Waiting for Kubernetes Deployment to complete..."
   if ! kubectl rollout status deployment "$NAME" -n "$NAMESPACE" --timeout=5m; then
-    echo "❌ Deployment rollout failed or timed out"
-    echo "🔍 Deployment details:"
+    echo "Deployment rollout failed or timed out"
+    echo "Deployment details:"
     kubectl describe deployment "$NAME" -n "$NAMESPACE"
     exit 1
   fi
 fi
 
-echo "🎉 $TYPE rollout completed successfully for $NAME in $NAMESPACE"
+echo "$TYPE rollout completed successfully for $NAME in $NAMESPACE"
