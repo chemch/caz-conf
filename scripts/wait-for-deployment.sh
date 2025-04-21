@@ -1,26 +1,43 @@
 #!/bin/bash
 set -euo pipefail
 
-SERVICE_NAME="$1"      # e.g., detection-svc
-ENVIRONMENT="$2"       # e.g., dev
-NAME="$SERVICE_NAME"
-NAMESPACE="$(echo "$SERVICE_NAME" | sed 's/-svc$//')-$ENVIRONMENT"
+SERVICE_NAME="${1:?Usage: $0 <service-name> <environment>}"
+ENVIRONMENT="${2:?Usage: $0 <service-name> <environment>}"
 
-TIMEOUT_SECONDS=300
-SLEEP_INTERVAL=10
-ELAPSED=0
+# Configurable vars (with defaults)
+TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-300}"
+SLEEP_INTERVAL="${SLEEP_INTERVAL:-10}"
+RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-3}"
+RETRY_DELAY="${RETRY_DELAY:-2}"
+
+NAME="$SERVICE_NAME"
+NAMESPACE="${NAMESPACE_OVERRIDE:-$(echo "$SERVICE_NAME" | sed 's/-svc$//')-$ENVIRONMENT}"
 
 echo "🔍 Expecting resource:"
 echo "   → Name:      $NAME"
 echo "   → Namespace: $NAMESPACE"
 
+# Retry wrapper for kubectl calls
+retry() {
+  local attempt=1
+  until "$@"; do
+    if (( attempt >= RETRY_ATTEMPTS )); then
+      return 1
+    fi
+    echo "⚠️  Command failed. Retrying in $RETRY_DELAY seconds... (Attempt $attempt/$RETRY_ATTEMPTS)"
+    sleep "$RETRY_DELAY"
+    attempt=$((attempt + 1))
+  done
+}
+
 # Wait for the resource to exist
+ELAPSED=0
 while true; do
-  if kubectl get rollout "$NAME" -n "$NAMESPACE" &>/dev/null; then
+  if retry kubectl get rollout "$NAME" -n "$NAMESPACE" &>/dev/null; then
     TYPE="Rollout"
     echo "✅ Found Rollout: $NAME in $NAMESPACE"
     break
-  elif kubectl get deployment "$NAME" -n "$NAMESPACE" &>/dev/null; then
+  elif retry kubectl get deployment "$NAME" -n "$NAMESPACE" &>/dev/null; then
     TYPE="Deployment"
     echo "✅ Found Deployment: $NAME in $NAMESPACE"
     break
@@ -36,12 +53,12 @@ while true; do
   ELAPSED=$((ELAPSED + SLEEP_INTERVAL))
 done
 
-# Reset timer for rollout completion
+# Reset timer for rollout/deployment readiness
 ELAPSED=0
-echo "📡 Checking $TYPE rollout status every ${SLEEP_INTERVAL}s for up to ${TIMEOUT_SECONDS}s..."
+echo "📡 Monitoring $TYPE readiness for up to ${TIMEOUT_SECONDS}s..."
 
 while (( ELAPSED < TIMEOUT_SECONDS )); do
-  if [ "$TYPE" == "Rollout" ]; then
+  if [[ "$TYPE" == "Rollout" ]]; then
     STATUS=$(kubectl-argo-rollouts get rollout "$NAME" -n "$NAMESPACE" -o=jsonpath='{.status.phase}' 2>/dev/null || echo "Missing")
     echo "🔄 Rollout status: $STATUS"
     if [[ "$STATUS" == "Healthy" ]]; then
@@ -63,11 +80,11 @@ while (( ELAPSED < TIMEOUT_SECONDS )); do
 done
 
 echo "❌ Timeout waiting for $TYPE to complete."
-echo "🔍 Dumping final status:"
-if [ "$TYPE" == "Rollout" ]; then
-  kubectl-argo-rollouts get rollout "$NAME" -n "$NAMESPACE"
+echo "🔍 Final status:"
+if [[ "$TYPE" == "Rollout" ]]; then
+  kubectl-argo-rollouts get rollout "$NAME" -n "$NAMESPACE" || true
 else
-  kubectl get deployment "$NAME" -n "$NAMESPACE"
+  kubectl get deployment "$NAME" -n "$NAMESPACE" || true
 fi
 
 exit 1
