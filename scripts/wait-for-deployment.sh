@@ -4,7 +4,7 @@ set -euo pipefail
 SERVICE_NAME="$1"     # e.g., detection-svc
 ENVIRONMENT="$2"      # e.g., dev
 
-BASE_NAME="${SERVICE_NAME%-svc}"             # Remove '-svc'
+BASE_NAME="${SERVICE_NAME%-svc}"             # Remove '-svc' suffix
 NAMESPACE="${BASE_NAME}-${ENVIRONMENT}"      # e.g., detection-dev
 NAME="$SERVICE_NAME"
 
@@ -42,10 +42,17 @@ echo "✅ Found $TYPE: $NAME in $NAMESPACE"
 if [ "$TYPE" = "Rollout" ]; then
   echo "⏳ Waiting for Argo Rollout to complete..."
   if ! kubectl-argo-rollouts status rollout "$NAME" -n "$NAMESPACE" --timeout 5m; then
-    echo "❌ Rollout failed or timed out"
-    echo "🔍 Rollout details:"
-    kubectl-argo-rollouts get rollout "$NAME" -n "$NAMESPACE"
-    exit 1
+    echo "⚠️  Status command exited with non-zero — checking actual rollout health..."
+
+    HEALTH=$(kubectl get rollout "$NAME" -n "$NAMESPACE" -o=jsonpath='{.status.conditions[?(@.type=="Progressing")].reason}')
+    if [[ "$HEALTH" == "NewReplicaSetAvailable" ]]; then
+      echo "✅ Rollout is Healthy. Proceeding."
+    else
+      echo "❌ Rollout failed or is stuck. Reason: $HEALTH"
+      echo "🔍 Rollout details:"
+      kubectl-argo-rollouts get rollout "$NAME" -n "$NAMESPACE"
+      exit 1
+    fi
   fi
 else
   echo "⏳ Waiting for Kubernetes Deployment to complete..."
