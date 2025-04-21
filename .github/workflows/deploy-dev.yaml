@@ -67,4 +67,4 @@ jobs:
         run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
 
       - name: Wait for rollout or deployment to complete
-        run: ./scripts/wait-for-rollout.sh "$SERVICE_NAME" "$SERVICE_NAME-$ENVIRONMENT"
+        run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$SERVICE_NAME-$ENVIRONMENT"
