@@ -12,7 +12,6 @@ on:
       service_name:
         required: false
         type: string
-    secrets: inherit
 
   workflow_dispatch:
     inputs:
