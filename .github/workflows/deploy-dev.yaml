@@ -69,6 +69,14 @@ jobs:
       - name: Wait for rollout
         run: |
           echo "Waiting for rollout to complete..."
+          for i in {1..12}; do
+            if kubectl get rollout "$SERVICE_NAME" -n "$SERVICE_NAME-$ENVIRONMENT" &>/dev/null; then
+              break
+            fi
+            echo "Waiting for rollout $SERVICE_NAME to appear..."
+            sleep 5
+          done
+          
           kubectl-argo-rollouts get rollout "$SERVICE_NAME" -n "$SERVICE_NAME-$ENVIRONMENT" --watch
 
       - name: Print rollout status
