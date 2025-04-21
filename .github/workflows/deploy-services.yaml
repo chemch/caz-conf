@@ -12,6 +12,8 @@ on:
       service_name:
         required: false
         type: string
+    secrets: inherit
+
   workflow_dispatch:
     inputs:
       environment:
@@ -23,8 +25,8 @@ on:
 
 jobs:
   deploy-matrix:
-    if: ${{ github.event.inputs.service_name == '' }}
-    name: Deploy all services to ${{ github.event.inputs.environment }}
+    if: ${{ !inputs.service_name }}
+    name: Deploy all services to ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -36,8 +38,8 @@ jobs:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
       SERVICE_NAME: ${{ matrix.service }}
-      ENVIRONMENT: ${{ github.event.inputs.environment }}
-      TAG: ${{ github.event.inputs.tag || 'latest' }}
+      ENVIRONMENT: ${{ inputs.environment }}
+      TAG: ${{ inputs.tag || 'latest' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -55,17 +57,17 @@ jobs:
       - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
 
   deploy-single:
-    if: ${{ github.event.inputs.service_name != '' }}
-    name: Deploy ${{ github.event.inputs.service_name }} to ${{ github.event.inputs.environment }}
+    if: ${{ inputs.service_name }}
+    name: Deploy ${{ inputs.service_name }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
-      SERVICE_NAME: ${{ github.event.inputs.service_name }}
-      ENVIRONMENT: ${{ github.event.inputs.environment }}
-      TAG: ${{ github.event.inputs.tag || 'latest' }}
+      SERVICE_NAME: ${{ inputs.service_name }}
+      ENVIRONMENT: ${{ inputs.environment }}
+      TAG: ${{ inputs.tag || 'latest' }}
 
     steps:
       - uses: actions/checkout@v3
