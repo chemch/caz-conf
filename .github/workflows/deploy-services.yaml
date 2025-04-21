@@ -18,10 +18,13 @@ on:
     inputs:
       environment:
         required: true
+        description: Environment
       tag:
         required: false
+        description: Tag
       service_name:
         required: false
+        description: Service Name
 
 jobs:
   deploy-matrix:
