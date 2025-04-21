@@ -42,4 +42,4 @@ jobs:
           ./scripts/set-image.sh detection-svc "$TAG"
 
       - name: Deploy detection-svc with custom script
-        run: ./scripts/start-service.sh detection-svc dev
+        run: ${{ github.workspace }}/scripts/start-service.sh detection-svc dev
