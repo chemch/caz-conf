@@ -6,7 +6,7 @@ on:
 
 jobs:
   forward-dispatch:
-    uses: ./.github/workflows/deploy-services.yaml
+    uses: chemch/caz-conf/.github/workflows/deploy-services.yaml@main
     with:
       environment: ${{ github.event.client_payload.environment }}
       tag: ${{ github.event.client_payload.tag }}
