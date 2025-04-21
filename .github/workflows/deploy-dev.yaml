@@ -1,18 +1,31 @@
-name: Deploy Dev
+name: Deploy All Services
 
 on:
-  repository_dispatch:
-    types: [start-dev-deployment]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment (dev, qa, uat, prod)'
+        required: true
+      tag:
+        description: 'Docker image tag (e.g., latest or commit SHA)'
+        required: false
 
 jobs:
-  deploy-detection-svc:
-    name: Deploy detection-svc to EKS
+  deploy:
+    name: Deploy ${{ matrix.service }} to ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service: [detection-svc, alert-svc, intel-svc]
+
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      TAG: ${{ github.event.inputs.tag || 'latest' }}
+      SERVICE_NAME: ${{ matrix.service }}
+      ENVIRONMENT: ${{ github.event.inputs.environment }}
 
     steps:
       - name: Checkout caz-conf repo
@@ -32,17 +45,32 @@ jobs:
             --region "$AWS_REGION" \
             --name "$EKS_CLUSTER_NAME"
 
+      - name: Install Argo Rollouts CLI
+        run: |
+          curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+          chmod +x kubectl-argo-rollouts-linux-amd64
+          sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+
       - name: Make scripts executable
         run: chmod +x ./scripts/*.sh
 
-      - name: Update detection-svc image tag in Kustomize overlay
-        env:
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+      - name: Set deployment image tag
         run: |
-          TAG=${{ github.event.client_payload.tag || 'latest' }}
-          echo "Updating image to tag: $TAG"
-          ./scripts/set-image.sh detection-svc "$TAG"
+          : "${TAG:=latest}"
+          echo "Using image tag: $TAG"
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
-      - name: Deploy detection-svc with custom script
-        run: ${{ github.workspace }}/scripts/start-service.sh detection-svc dev
+      - name: Update image in overlay
+        run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
+
+      - name: Deploy service
+        run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
+
+      - name: Wait for rollout
+        run: |
+          echo "Waiting for rollout to complete..."
+          kubectl-argo-rollouts get rollout "$SERVICE_NAME" -n "$SERVICE_NAME-$ENVIRONMENT" --watch
+
+      - name: Print rollout status
+        run: |
+          kubectl-argo-rollouts status rollout "$SERVICE_NAME" -n "$SERVICE_NAME-$ENVIRONMENT"
