@@ -54,8 +54,8 @@ ELAPSED=0
 echo "📡 Monitoring Deployment readiness for up to ${TIMEOUT_SECONDS}s..."
 
 while (( ELAPSED < TIMEOUT_SECONDS )); do
-  READY=$(kubectl get deployment "$NAME" -n "$NAMESPACE" -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0")
-  DESIRED=$(kubectl get deployment "$NAME" -n "$NAMESPACE" -o jsonpath='{.status.replicas}' 2>/dev/null || echo "0")
+  READY=$(retry kubectl get deployment "$NAME" -n "$NAMESPACE" -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0")
+  DESIRED=$(retry kubectl get deployment "$NAME" -n "$NAMESPACE" -o jsonpath='{.status.replicas}' 2>/dev/null || echo "0")
 
   echo "🔄 Deployment status: readyReplicas=$READY / replicas=$DESIRED"
   if [[ "$READY" == "$DESIRED" && "$READY" != "0" ]]; then

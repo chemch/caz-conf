@@ -33,10 +33,10 @@ on:
         description: Environment (dev, qa, uat, prod)
       tag:
         required: false
-        description: Tag (dev, prod_v1.0.1)
+        description: Tag (defaults to latest)
       service_name:
         required: false
-        description: Service Name (intel-svc, detection-svc)
+        description: Service Name (defaults to all)
 
 jobs:
   deploy-matrix:
