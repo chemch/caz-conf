@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: detection-svc
+spec:
+  template:
+    metadata:
+      labels:
+        app: detection-svc
+    spec:
+      containers:
+        - name: detection-svc
+          image: detection-svc:placeholder
+          ports:
+            - containerPort: 8004
+          env:
+            - name: PORT
+              value: "8004"

@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: detection-svc
 spec:
-  selector:
-    app: detection-svc
   ports:
     - name: http
       protocol: TCP

@@ -4,6 +4,16 @@ resources:
 
 patches:
   - target:
+      kind: Rollout
+      name: detection-svc
+    path: patch-rollout.yaml
+
+  - target:
       kind: Service
       name: detection-svc
     path: patch-service.yaml
+
+images:
+  - name: detection-svc
+    newName: 211125540194.dkr.ecr.us-east-1.amazonaws.com/detection-svc
+    newTag: latest
