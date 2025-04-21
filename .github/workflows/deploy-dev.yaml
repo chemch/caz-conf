@@ -36,6 +36,9 @@ jobs:
         run: chmod +x ./scripts/*.sh
 
       - name: Update detection-svc image tag in Kustomize overlay
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           TAG=${{ github.event.client_payload.tag || 'latest' }}
           echo "Updating image to tag: $TAG"
