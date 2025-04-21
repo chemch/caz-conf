@@ -1,15 +1,6 @@
 name: Deploy Services
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        required: true
-      tag:
-        required: false
-      service_name:
-        required: false
-
   workflow_call:
     inputs:
       environment:
@@ -23,14 +14,24 @@ on:
         type: string
     secrets: inherit
 
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+      tag:
+        required: false
+      service_name:
+        required: false
+
 jobs:
-  deploy:
-    name: Deploy ${{ matrix.service }} to ${{ github.event.inputs.environment }}
+  deploy-matrix:
+    if: ${{ github.event.inputs.service_name == '' }}
+    name: Deploy all services to ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        service: ${{ fromJson(inputs.service_name && format('["{0}"]', inputs.service_name) || '["detection-svc","alert-svc","intel-svc"]') }}
+        service: [detection-svc, alert-svc, intel-svc]
 
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -38,46 +39,47 @@ jobs:
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
       SERVICE_NAME: ${{ matrix.service }}
       ENVIRONMENT: ${{ github.event.inputs.environment }}
+      TAG: ${{ github.event.inputs.tag || 'latest' }}
 
     steps:
-      - name: Checkout caz-conf repo
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
+      - run: aws eks update-kubeconfig --region "$AWS_REGION" --name "$EKS_CLUSTER_NAME"
+      - run: curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64 && chmod +x kubectl-argo-rollouts-linux-amd64 && sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+      - run: chmod +x ./scripts/*.sh
+      - run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
+      - run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
+      - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
 
-      - name: Update kubeconfig for EKS
-        run: |
-          aws eks update-kubeconfig \
-            --region "$AWS_REGION" \
-            --name "$EKS_CLUSTER_NAME"
+  deploy-single:
+    if: ${{ github.event.inputs.service_name != '' }}
+    name: Deploy ${{ github.event.inputs.service_name }} to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
 
-      - name: Install Argo Rollouts CLI
-        run: |
-          curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
-          chmod +x kubectl-argo-rollouts-linux-amd64
-          sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      SERVICE_NAME: ${{ github.event.inputs.service_name }}
+      ENVIRONMENT: ${{ github.event.inputs.environment }}
+      TAG: ${{ github.event.inputs.tag || 'latest' }}
 
-      - name: Make scripts executable
-        run: chmod +x ./scripts/*.sh
-
-      - name: Set image tag (with fallback)
-        run: |
-          TAG="${{ github.event.inputs.tag }}"
-          : "${TAG:=latest}"
-          echo "Using image tag: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
-      - name: Update image in overlay
-        run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
-
-      - name: Deploy service
-        run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
-
-      - name: Wait for rollout or deployment to complete
-        run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - run: aws eks update-kubeconfig --region "$AWS_REGION" --name "$EKS_CLUSTER_NAME"
+      - run: curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64 && chmod +x kubectl-argo-rollouts-linux-amd64 && sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+      - run: chmod +x ./scripts/*.sh
+      - run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
+      - run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
+      - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
