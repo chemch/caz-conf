@@ -12,6 +12,19 @@ on:
       service_name:
         required: false
         type: string
+    secrets:
+      AWS_REGION:
+        required: true
+      AWS_ACCOUNT_ID:
+        required: true
+      EKS_CLUSTER_NAME:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_SESSION_TOKEN:
+        required: true
 
   workflow_dispatch:
     inputs:
@@ -52,7 +65,10 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
       - run: aws eks update-kubeconfig --region "$AWS_REGION" --name "$EKS_CLUSTER_NAME"
-      - run: curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64 && chmod +x kubectl-argo-rollouts-linux-amd64 && sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+      - run: |
+          curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+          chmod +x kubectl-argo-rollouts-linux-amd64
+          sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
       - run: chmod +x ./scripts/*.sh
       - run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
       - run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
@@ -80,7 +96,10 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
       - run: aws eks update-kubeconfig --region "$AWS_REGION" --name "$EKS_CLUSTER_NAME"
-      - run: curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64 && chmod +x kubectl-argo-rollouts-linux-amd64 && sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+      - run: |
+          curl -sLO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+          chmod +x kubectl-argo-rollouts-linux-amd64
+          sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
       - run: chmod +x ./scripts/*.sh
       - run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
       - run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
