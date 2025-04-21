@@ -4,6 +4,9 @@ metadata:
   name: detection-svc
 spec:
   template:
+    metadata:
+      labels:
+        app: detection-svc
     spec:
       containers:
         - name: detection-svc
