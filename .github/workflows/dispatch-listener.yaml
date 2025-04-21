@@ -11,4 +11,3 @@ jobs:
       environment: ${{ github.event.client_payload.environment }}
       tag: ${{ github.event.client_payload.tag }}
       service_name: ${{ github.event.client_payload.service_name }}
-    secrets: inherit
