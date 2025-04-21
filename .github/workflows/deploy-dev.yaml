@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        service: [detection-svc, alert-svc, intel-svc]
+        service: [detection-svc]
 
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
