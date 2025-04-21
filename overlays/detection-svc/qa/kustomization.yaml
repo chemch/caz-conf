@@ -4,9 +4,9 @@ resources:
 
 patches:
   - target:
-      kind: Deployment
+      kind: Rollout
       name: detection-svc
-    path: patch-deployment.yaml
+    path: patch-rollout.yaml
 
   - target:
       kind: Service
