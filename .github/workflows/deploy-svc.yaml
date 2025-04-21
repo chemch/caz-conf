@@ -4,14 +4,24 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment (dev, qa, uat, prod)'
         required: true
       tag:
-        description: 'Docker image tag (e.g., latest or commit SHA)'
         required: false
       service_name:
-        description: 'Optional: Deploy a single service (e.g., detection-svc)'
         required: false
+
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      tag:
+        required: false
+        type: string
+      service_name:
+        required: false
+        type: string
+    secrets: inherit
 
 jobs:
   deploy:
