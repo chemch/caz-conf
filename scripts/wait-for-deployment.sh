@@ -8,42 +8,41 @@ TIMEOUT_SECONDS=300
 SLEEP_INTERVAL=5
 ELAPSED=0
 
-echo "🔍 Checking rollout status for $SERVICE_NAME in namespace $NAMESPACE..."
+echo "Checking rollout status for $SERVICE_NAME in namespace $NAMESPACE..."
 
-# Wait for the resource to appear
 while true; do
   if kubectl get rollout "$SERVICE_NAME" -n "$NAMESPACE" &>/dev/null; then
-    echo "✅ Found Rollout: $SERVICE_NAME in $NAMESPACE"
+    echo "Found Rollout: $SERVICE_NAME in $NAMESPACE"
     break
   elif kubectl get deployment "$SERVICE_NAME" -n "$NAMESPACE" &>/dev/null; then
-    echo "✅ Found Deployment: $SERVICE_NAME in $NAMESPACE"
+    echo "Found Deployment: $SERVICE_NAME in $NAMESPACE"
     break
   fi
 
   if (( ELAPSED >= TIMEOUT_SECONDS )); then
-    echo "❌ Timeout: Resource '$SERVICE_NAME' not found in namespace '$NAMESPACE'"
+    echo "Timeout: Resource '$SERVICE_NAME' not found in namespace '$NAMESPACE'"
     exit 1
   fi
 
-  echo "⏳ Waiting for '$SERVICE_NAME' to appear in '$NAMESPACE'... (${ELAPSED}s)"
+  echo "Waiting for '$SERVICE_NAME' to appear in '$NAMESPACE'... (${ELAPSED}s)"
   sleep "$SLEEP_INTERVAL"
   ELAPSED=$((ELAPSED + SLEEP_INTERVAL))
 done
 
 # Wait for rollout to complete
 if kubectl get rollout "$SERVICE_NAME" -n "$NAMESPACE" &>/dev/null; then
-  echo "📡 Monitoring rollout with Argo Rollouts CLI..."
+  echo "Monitoring rollout with Argo Rollouts CLI..."
   if ! kubectl-argo-rollouts get rollout "$SERVICE_NAME" -n "$NAMESPACE" --watch; then
-    echo "❌ Rollout failed or stuck. Status:"
+    echo "Rollout failed or stuck. Status:"
     kubectl-argo-rollouts get rollout "$SERVICE_NAME" -n "$NAMESPACE"
     exit 1
   fi
 else
-  echo "📡 Monitoring deployment with kubectl..."
+  echo "Monitoring deployment with kubectl..."
   if ! kubectl rollout status deployment "$SERVICE_NAME" -n "$NAMESPACE" --timeout=300s; then
-    echo "❌ Deployment rollout failed or timed out"
+    echo "Deployment rollout failed or timed out"
     exit 1
   fi
 fi
 
-echo "🎉 Rollout or Deployment completed successfully for $SERVICE_NAME in $NAMESPACE"
+echo " Rollout or Deployment completed successfully for $SERVICE_NAME in $NAMESPACE"
