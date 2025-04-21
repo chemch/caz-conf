@@ -30,13 +30,13 @@ on:
     inputs:
       environment:
         required: true
-        description: Environment
+        description: Environment (dev, qa, uat, prod)
       tag:
         required: false
-        description: Tag
+        description: Tag (dev, prod_v1.0.1)
       service_name:
         required: false
-        description: Service Name
+        description: Service Name (intel-svc, detection-svc)
 
 jobs:
   deploy-matrix:

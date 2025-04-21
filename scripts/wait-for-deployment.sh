@@ -11,7 +11,7 @@ RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-3}"
 RETRY_DELAY="${RETRY_DELAY:-2}"
 
 NAME="$SERVICE_NAME"
-NAMESPACE="${NAMESPACE_OVERRIDE:-$(echo "$SERVICE_NAME" | sed 's/-svc$//')-$ENVIRONMENT"
+NAMESPACE="${NAMESPACE_OVERRIDE:-$(echo "$SERVICE_NAME" | sed 's/-svc$//')-$ENVIRONMENT}"
 
 echo "🔍 Expecting resource:"
 echo "   → Name:      $NAME"
