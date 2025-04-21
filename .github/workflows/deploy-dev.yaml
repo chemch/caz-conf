@@ -17,13 +17,12 @@ jobs:
 
     strategy:
       matrix:
-        service: [detection-svc]
+        service: [detection-svc, intel-svc, alert-svc]
 
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
-      TAG: ${{ github.event.inputs.tag || 'latest' }}
       SERVICE_NAME: ${{ matrix.service }}
       ENVIRONMENT: ${{ github.event.inputs.environment }}
 
@@ -54,8 +53,9 @@ jobs:
       - name: Make scripts executable
         run: chmod +x ./scripts/*.sh
 
-      - name: Set deployment image tag
+      - name: Set image tag (with fallback)
         run: |
+          TAG="${{ github.event.inputs.tag }}"
           : "${TAG:=latest}"
           echo "Using image tag: $TAG"
           echo "TAG=$TAG" >> $GITHUB_ENV
@@ -66,36 +66,5 @@ jobs:
       - name: Deploy service
         run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
 
-      - name: Install Argo CD CLI
-        run: |
-          curl -sLO https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x argocd-linux-amd64
-          sudo mv argocd-linux-amd64 /usr/local/bin/argocd
-          
-      - name: Sync Argo CD app and wait for Rollout
-        run: |
-          APP_NAME=${SERVICE_NAME}-${ENVIRONMENT}
-      
-          echo "Waiting for Argo CD app $APP_NAME to become Healthy..."
-      
-          # Assumes argocd CLI is configured to use in-cluster service (optional alternative: port-forward)
-          argocd app wait $APP_NAME --health --timeout 120
-      
-          echo "App is Healthy. Proceeding with rollout watch."
-
-      - name: Wait for rollout
-        run: |
-          echo "Waiting for rollout to complete..."
-          for i in {1..12}; do
-            if kubectl get rollout "$SERVICE_NAME" -n "$SERVICE_NAME-$ENVIRONMENT" &>/dev/null; then
-              break
-            fi
-            echo "Waiting for rollout $SERVICE_NAME to appear..."
-            sleep 5
-          done
-          
-          kubectl-argo-rollouts get rollout "$SERVICE_NAME" -n "$SERVICE_NAME-$ENVIRONMENT" --watch
-
-      - name: Print rollout status
-        run: |
-          kubectl-argo-rollouts status rollout "$SERVICE_NAME" -n "$SERVICE_NAME-$ENVIRONMENT"
+      - name: Wait for rollout or deployment to complete
+        run: ./scripts/wait-for-rollout.sh "$SERVICE_NAME" "$SERVICE_NAME-$ENVIRONMENT"
