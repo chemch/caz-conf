@@ -6,7 +6,7 @@ patches:
   - target:
       kind: Deployment
       name: intel-svc
-    path: patch-deployment.yaml
+    path: patch-rollout.yaml
 
   - target:
       kind: Service

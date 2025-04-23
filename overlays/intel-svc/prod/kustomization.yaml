@@ -6,7 +6,7 @@ patches:
   - target:
       kind: Deployment
       name: intel-svc
-    path: patch-deployment.yaml
+    path: patch-rollout.yaml
 
   - target:
       kind: Service
@@ -14,5 +14,6 @@ patches:
     path: patch-service.yaml
 
 images:
-  - name: chemch/intel-svc
+  - name: intel-svc
+    newName: 211125540194.dkr.ecr.us-east-1.amazonaws.com/intel-svc
     newTag: prod
