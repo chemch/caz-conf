@@ -18,13 +18,18 @@ fi
 
 # Detect current version
 CURRENT=$(yq '.spec.selector.version' "$PATCH_PATH")
+
 if [ "$CURRENT" == "blue" ]; then
   NEXT="green"
+  CURRENT_EMOJI="🟦"
+  NEXT_EMOJI="🟩"
 else
   NEXT="blue"
+  CURRENT_EMOJI="🟩"
+  NEXT_EMOJI="🟦"
 fi
 
-echo "Switching $SERVICE in $ENV from $CURRENT to $NEXT..."
+echo "Switching $SERVICE in $ENV from $CURRENT_EMOJI $CURRENT to $NEXT_EMOJI $NEXT..."
 
 # Update the patch-service.yaml
 yq eval ".spec.selector.version = \"$NEXT\"" -i "$PATCH_PATH"
