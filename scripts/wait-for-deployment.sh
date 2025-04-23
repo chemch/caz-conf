@@ -12,7 +12,7 @@ RETRY_DELAY="${RETRY_DELAY:-5}"
 
 NAMESPACE="${NAMESPACE_OVERRIDE:-$(echo "$SERVICE_NAME" | sed 's/-svc$//')-$ENVIRONMENT}"
 
-# Default NAME (can be overridden by blue-green detection)
+# Default NAME (can be overridden by blue-green detection) - New Section
 NAME="$SERVICE_NAME"
 
 # Detect active color (blue/green) if available
