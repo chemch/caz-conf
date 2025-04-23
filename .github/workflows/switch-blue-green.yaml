@@ -36,7 +36,7 @@ jobs:
 
       - name: Push updated patch-service.yaml with PAT
         env:
-          PAT_PUSH_TOKEN: ${{ secrets.CONF_REPO_PAT }}
+          PAT_PUSH_TOKEN: ${{ secrets.PLATFORM_REPO_PAT }}
         run: |
-          git remote set-url origin https://x-access-token:${PAT_PUSH_TOKEN}@github.com/${{ github.repository }}
+          git remote set-url origin "https://x-access-token:${PAT_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
           git push origin HEAD:main
