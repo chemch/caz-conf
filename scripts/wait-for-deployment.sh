@@ -5,9 +5,9 @@ SERVICE_NAME="${1:?Usage: $0 <service-name> <environment>}"
 ENVIRONMENT="${2:?Usage: $0 <service-name> <environment>}"
 
 # Configurable vars
-TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-300}"
-SLEEP_INTERVAL="${SLEEP_INTERVAL:-10}"
-RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-4}"
+TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-120}"
+SLEEP_INTERVAL="${SLEEP_INTERVAL:-15}"
+RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-3}"
 RETRY_DELAY="${RETRY_DELAY:-3}"
 
 NAME="$SERVICE_NAME"
@@ -41,7 +41,33 @@ while (( ELAPSED < TIMEOUT_SECONDS )); do
     TYPE="Deployment"
     echo "Found Deployment: $NAME in $NAMESPACE"
     break
+  else
+    # Try detecting active color from patch-service.yaml if standard name not found
+    PATCH_PATH="overlays/${SERVICE_NAME}/${ENVIRONMENT}/patch-service.yaml"
+    if [[ -f "$PATCH_PATH" ]]; then
+      COLOR=$(yq '.spec.selector.version' "$PATCH_PATH" 2>/dev/null || echo "")
+      if [[ -n "$COLOR" ]]; then
+        ALT_NAME="${SERVICE_NAME}-${COLOR}"
+        if retry kubectl get deployment "$ALT_NAME" -n "$NAMESPACE" &>/dev/null; then
+          NAME="$ALT_NAME"
+          TYPE="Deployment"
+          echo "Fallback: Found Blue-Green Deployment: $NAME in $NAMESPACE"
+          break
+        fi
+        if retry kubectl get rollout "$ALT_NAME" -n "$NAMESPACE" &>/dev/null; then
+          NAME="$ALT_NAME"
+          TYPE="Rollout"
+          echo "Fallback: Found Blue-Green Rollout: $NAME in $NAMESPACE"
+          break
+        fi
+      fi
+    fi
   fi
+
+  echo "Waiting for resource '$NAME' in '$NAMESPACE'... (${ELAPSED}s)"
+  sleep "$SLEEP_INTERVAL"
+  ELAPSED=$((ELAPSED + SLEEP_INTERVAL))
+done
 
   echo "Waiting for resource '$NAME' in '$NAMESPACE'... (${ELAPSED}s)"
   sleep "$SLEEP_INTERVAL"
