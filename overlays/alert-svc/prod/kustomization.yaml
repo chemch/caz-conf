@@ -4,6 +4,16 @@ resources:
 
 patches:
   - target:
+      kind: Deployment
+      name: alert-svc
+    path: patch-deployment.yaml
+
+  - target:
       kind: Service
       name: alert-svc
     path: patch-service.yaml
+
+images:
+  - name: alert-svc
+    newName: 211125540194.dkr.ecr.us-east-1.amazonaws.com/alert-svc
+    newTag: latest
