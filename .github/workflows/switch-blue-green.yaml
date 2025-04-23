@@ -1,0 +1,39 @@
+name: Switch Blue/Green Color
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: "Service name (e.g. alert-svc)"
+        required: true
+      environment:
+        description: "Environment (e.g. qa, prod)"
+        required: true
+
+jobs:
+  switch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main  # Or your target branch
+
+      - name: Set up Git identity
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+          yq --version
+
+      - name: Switch color for ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
+        run: ./scripts/switch-color.sh ${{ github.event.inputs.service }} ${{ github.event.inputs.environment }}
+
+      - name: Push updated patch-service.yaml
+        run: |
+          git push origin HEAD:main
