@@ -34,6 +34,9 @@ jobs:
       - name: Switch color for ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
         run: ./scripts/switch-color.sh ${{ github.event.inputs.service }} ${{ github.event.inputs.environment }}
 
-      - name: Push updated patch-service.yaml
+      - name: Push updated patch-service.yaml with PAT
+        env:
+          PAT_PUSH_TOKEN: ${{ secrets.PAT_PUSH_TOKEN }}
         run: |
+          git remote set-url origin https://x-access-token:${PAT_PUSH_TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD:main
