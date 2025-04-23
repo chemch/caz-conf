@@ -5,7 +5,7 @@ SERVICE_NAME="${1:?Usage: $0 <service-name> <environment>}"
 ENVIRONMENT="${2:?Usage: $0 <service-name> <environment>}"
 
 # Configurable vars
-TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-65}"
+TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-95}"
 SLEEP_INTERVAL="${SLEEP_INTERVAL:-15}"
 RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-3}"
 RETRY_DELAY="${RETRY_DELAY:-3}"
