@@ -1,4 +1,4 @@
 resources:
   - deployment-green.yaml
-  - service-blue.yaml
-  - service-green.yaml
+  - deployment-blue.yaml
+  - service-color.yaml
