@@ -18,21 +18,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main  # Or your target branch
+          ref: main
+          persist-credentials: false  # 👈 disables the default token auth
 
       - name: Set up Git identity
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-
-      - name: Install yq
-        run: |
-          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
-          yq --version
-
-      - name: Switch color for ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
-        run: ./scripts/switch-color.sh ${{ github.event.inputs.service }} ${{ github.event.inputs.environment }}
 
       - name: Push updated patch-service.yaml with PAT
         env:
