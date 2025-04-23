@@ -5,9 +5,9 @@ SERVICE_NAME="${1:?Usage: $0 <service-name> <environment>}"
 ENVIRONMENT="${2:?Usage: $0 <service-name> <environment>}"
 
 # Configurable vars
-TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-120}"
-SLEEP_INTERVAL="${SLEEP_INTERVAL:-15}"
-RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-3}"
+TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-300}"
+SLEEP_INTERVAL="${SLEEP_INTERVAL:-10}"
+RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-4}"
 RETRY_DELAY="${RETRY_DELAY:-3}"
 
 NAME="$SERVICE_NAME"
@@ -63,11 +63,6 @@ while (( ELAPSED < TIMEOUT_SECONDS )); do
       fi
     fi
   fi
-
-  echo "Waiting for resource '$NAME' in '$NAMESPACE'... (${ELAPSED}s)"
-  sleep "$SLEEP_INTERVAL"
-  ELAPSED=$((ELAPSED + SLEEP_INTERVAL))
-done
 
   echo "Waiting for resource '$NAME' in '$NAMESPACE'... (${ELAPSED}s)"
   sleep "$SLEEP_INTERVAL"
