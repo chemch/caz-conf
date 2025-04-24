@@ -63,7 +63,6 @@ jobs:
           chmod +x kubectl-argo-rollouts-linux-amd64
           sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
       - run: chmod +x ./scripts/*.sh
-      - run: ./scripts/set-image.sh "$SERVICE_NAME"
       - run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
       - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
 
