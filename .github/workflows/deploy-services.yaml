@@ -35,7 +35,7 @@ on:
 jobs:
   deploy-matrix:
     if: ${{ !inputs.service_name }}
-    name: Deploy all services to ${{ inputs.environment }}
+    name: Deploy ${{ matrix.service }} to ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
     strategy:
