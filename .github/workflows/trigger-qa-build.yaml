@@ -1,0 +1,21 @@
+name: Trigger QA Build Daily
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dispatch-qa-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send repository_dispatch to caz-platform
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.REPO_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/YOUR_ORG/caz-platform/dispatches \
+            -d '{
+              "event_type": "start-build",
+              "client_payload": {
+                "environment": "qa"
+              }
+            }'
