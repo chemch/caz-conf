@@ -6,9 +6,6 @@ on:
       environment:
         required: true
         type: string
-      tag:
-        required: false
-        type: string
       service_name:
         required: false
         type: string
@@ -31,9 +28,6 @@ on:
       environment:
         required: true
         description: Environment (dev, qa, uat, prod)
-      tag:
-        required: false
-        description: Tag (defaults to latest)
       service_name:
         required: false
         description: Service Name (defaults to all)
@@ -54,7 +48,6 @@ jobs:
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
       SERVICE_NAME: ${{ matrix.service }}
       ENVIRONMENT: ${{ inputs.environment }}
-      TAG: ${{ inputs.tag || 'latest' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -70,7 +63,7 @@ jobs:
           chmod +x kubectl-argo-rollouts-linux-amd64
           sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
       - run: chmod +x ./scripts/*.sh
-      - run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
+      - run: ./scripts/set-image.sh "$SERVICE_NAME"
       - run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
       - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
 
@@ -85,7 +78,6 @@ jobs:
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
       SERVICE_NAME: ${{ inputs.service_name }}
       ENVIRONMENT: ${{ inputs.environment }}
-      TAG: ${{ inputs.tag || 'latest' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -101,6 +93,5 @@ jobs:
           chmod +x kubectl-argo-rollouts-linux-amd64
           sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
       - run: chmod +x ./scripts/*.sh
-      - run: ./scripts/set-image.sh "$SERVICE_NAME" "$TAG"
       - run: ./scripts/start-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
       - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
