@@ -16,5 +16,5 @@ spec:
     spec:
       containers:
         - name: alert-svc
-          image: alert-svc:placeholder
+          image: alert-svc:v1.2.3
           imagePullPolicy: Always

@@ -1,0 +1,61 @@
+name: Deploy Blue/Green Versions
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        description: Target environment (dev, qa, uat, prod)
+      service_name:
+        required: true
+        description: Service name (e.g., alert-svc)
+      blue_tag:
+        required: false
+        description: Image tag for blue deployment
+      green_tag:
+        required: false
+        description: Image tag for green deployment
+
+jobs:
+  update-blue-green:
+    name: Update Blue/Green Image Tags
+    runs-on: ubuntu-latest
+    environment: prod
+
+    env:
+      TAG_NAME: ${{ github.event.release.tag_name }}
+      SERVICE_NAME: ${{ inputs.service_name || 'alert-svc' }}
+      ENVIRONMENT: ${{ inputs.environment || 'prod' }}
+      BLUE_TAG: ${{ inputs.blue_tag || 'stable' }}
+      GREEN_TAG: ${{ inputs.green_tag || github.event.release.tag_name }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Git config
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Update Blue Deployment Image
+        run: |
+          cd caz-conf/overlays/$ENVIRONMENT/$SERVICE_NAME/blue
+          kustomize edit set image $SERVICE_NAME=211125540194.dkr.ecr.us-east-1.amazonaws.com/$SERVICE_NAME:$BLUE_TAG
+
+      - name: Update Green Deployment Image
+        run: |
+          cd caz-conf/overlays/$ENVIRONMENT/$SERVICE_NAME/green
+          kustomize edit set image $SERVICE_NAME=211125540194.dkr.ecr.us-east-1.amazonaws.com/$SERVICE_NAME:$GREEN_TAG
+
+      - name: Commit and Push Changes
+        run: |
+          git add caz-conf/overlays/$ENVIRONMENT/$SERVICE_NAME/**/kustomization.yaml
+          git commit -m "$SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG in $ENVIRONMENT"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_PAT }}
