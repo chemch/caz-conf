@@ -42,20 +42,24 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      - name: Update Blue Deployment Image
+      - name: Install yq
         run: |
-          cd caz-conf/overlays/$ENVIRONMENT/$SERVICE_NAME/blue
-          kustomize edit set image $SERVICE_NAME=211125540194.dkr.ecr.us-east-1.amazonaws.com/$SERVICE_NAME:$BLUE_TAG
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
 
-      - name: Update Green Deployment Image
+      - name: Update blue deployment image
         run: |
-          cd caz-conf/overlays/$ENVIRONMENT/$SERVICE_NAME/green
-          kustomize edit set image $SERVICE_NAME=211125540194.dkr.ecr.us-east-1.amazonaws.com/$SERVICE_NAME:$GREEN_TAG
+          yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.BLUE_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
+
+      - name: Update green deployment image
+        run: |
+          yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.GREEN_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-green.yaml
 
       - name: Commit and Push Changes
         run: |
-          git add caz-conf/overlays/$ENVIRONMENT/$SERVICE_NAME/**/kustomization.yaml
-          git commit -m "$SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG in $ENVIRONMENT"
+          git add base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
+          git add base/${{ env.SERVICE_NAME }}/deployment-green.yaml
+          git commit -m "🚀 $SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_PAT }}
