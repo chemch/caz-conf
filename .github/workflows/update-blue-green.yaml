@@ -56,10 +56,11 @@ jobs:
           yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.GREEN_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-green.yaml
 
       - name: Commit and Push Changes
+        env:
+          PAT_PUSH_TOKEN: ${{ secrets.REPO_PAT }}
         run: |
+          git remote set-url origin "https://x-access-token:${PAT_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
           git add base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
           git add base/${{ env.SERVICE_NAME }}/deployment-green.yaml
           git commit -m "🚀 $SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_PAT }}
+          git push origin HEAD:main
