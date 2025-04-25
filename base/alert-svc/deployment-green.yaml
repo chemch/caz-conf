@@ -16,5 +16,5 @@ spec:
     spec:
       containers:
         - name: alert-svc
-          image: alert-svc:v1.2.4
+          image: 211125540194.dkr.ecr.us-east-1.amazonaws.com/alert-svc:dev_202504240507
           imagePullPolicy: Always
