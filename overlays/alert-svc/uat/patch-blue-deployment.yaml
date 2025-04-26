@@ -13,4 +13,4 @@ spec:
           env:
             - name: PORT
               value: "7002"
-          image: 211125540194.dkr.ecr.us-east-1.amazonaws.com/alert-svc:202504260931
+          image: 211125540194.dkr.ecr.us-east-1.amazonaws.com/alert-svc:uat_202504260940
