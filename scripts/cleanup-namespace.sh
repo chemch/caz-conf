@@ -6,8 +6,9 @@ ENVIRONMENT="${2:?Usage: $0 <service-name> <environment>}"
 
 NAMESPACE="${SERVICE_NAME%-svc}-${ENVIRONMENT}"
 
-echo "Cleaning up namespace $NAMESPACE before redeployment..."
+echo "Force cleaning up namespace $NAMESPACE before redeployment..."
 
-kubectl delete all --all -n "$NAMESPACE" || true
+kubectl delete all --all -n "$NAMESPACE" --grace-period=0 --force || true
+kubectl delete configmap,secret,pvc,job,cronjob --all -n "$NAMESPACE" --grace-period=0 --force || true
 
-echo "Namespace $NAMESPACE cleaned."
+echo "Namespace $NAMESPACE force-cleaned."
