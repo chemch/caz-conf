@@ -16,4 +16,4 @@ patches:
 images:
   - name: intel-svc
     newName: 211125540194.dkr.ecr.us-east-1.amazonaws.com/intel-svc
-    newTag: latest
+    newTag: prod
