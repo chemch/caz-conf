@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: intel-svc
 spec:
-  replicas: 2
+  replicas: 1
   template:
     spec:
       containers:
