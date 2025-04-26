@@ -16,4 +16,4 @@ patches:
 images:
   - name: alert-svc
     newName: 211125540194.dkr.ecr.us-east-1.amazonaws.com/alert-svc
-    newTag: latest
+    newTag: qa
