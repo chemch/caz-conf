@@ -35,6 +35,14 @@ jobs:
       - name: Switch Color - ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
         run: ./scripts/toggle-blue-green.sh ${{ github.event.inputs.service }} ${{ github.event.inputs.environment }}
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
       - name: Update kubeconfig to connect to EKS
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
