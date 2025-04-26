@@ -28,7 +28,7 @@ jobs:
       TAG_NAME: ${{ github.event.release.tag_name }}
       SERVICE_NAME: ${{ inputs.service_name || 'alert-svc' }}
       ENVIRONMENT: ${{ inputs.environment || 'prod' }}
-      BLUE_TAG: ${{ inputs.blue_tag || '' }}  # Default to empty if not provided
+      BLUE_TAG: ${{ inputs.blue_tag || '' }}
       GREEN_TAG: ${{ inputs.green_tag || github.event.release.tag_name }}
 
     steps:
@@ -37,6 +37,8 @@ jobs:
         with:
           ref: main
           persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Set up Git Config
         run: |
@@ -48,15 +50,19 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      - name: Update Blue Deployment Image (Optionally)
+      - name: Update Blue Deployment Image (Overlay Only)
         if: ${{ inputs.blue_tag != '' }}
         run: |
-          yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.BLUE_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
+          if [ -f overlays/${{ env.SERVICE_NAME }}/${{ env.ENVIRONMENT }}/patch-blue-deployment.yaml ]; then
+            yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.BLUE_TAG }}"' -i overlays/${{ env.SERVICE_NAME }}/${{ env.ENVIRONMENT }}/patch-blue-deployment.yaml
+          fi
 
-      - name: Update Green Deployment Image (if Provided or on Release)
+      - name: Update Green Deployment Image (Overlay Only)
         if: ${{ inputs.green_tag != '' || github.event.release.tag_name }}
         run: |
-          yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.GREEN_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-green.yaml
+          if [ -f overlays/${{ env.SERVICE_NAME }}/${{ env.ENVIRONMENT }}/patch-green-deployment.yaml ]; then
+            yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.GREEN_TAG }}"' -i overlays/${{ env.SERVICE_NAME }}/${{ env.ENVIRONMENT }}/patch-green-deployment.yaml
+          fi
 
       - name: Commit and Push Changes
         if: ${{ inputs.blue_tag != '' || inputs.green_tag != '' || github.event.release.tag_name }}
@@ -64,7 +70,7 @@ jobs:
           PAT_PUSH_TOKEN: ${{ secrets.REPO_PAT }}
         run: |
           git remote set-url origin "https://x-access-token:${PAT_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
-          git add base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
-          git add base/${{ env.SERVICE_NAME }}/deployment-green.yaml
-          git diff --quiet && git diff --staged --quiet || git commit -m "🚀 $SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG"
+          git add overlays/${{ env.SERVICE_NAME }}/${{ env.ENVIRONMENT }}/patch-blue-deployment.yaml || true
+          git add overlays/${{ env.SERVICE_NAME }}/${{ env.ENVIRONMENT }}/patch-green-deployment.yaml || true
+          git diff --quiet && git diff --staged --quiet || git commit -m " $SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG ($ENVIRONMENT overlay)"
           git push origin HEAD:main
