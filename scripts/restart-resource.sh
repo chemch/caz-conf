@@ -6,20 +6,20 @@ ENVIRONMENT="${2:?Usage: $0 <service-name> <environment>}"
 
 NAMESPACE="${SERVICE_NAME%-svc}-${ENVIRONMENT}"
 
-echo "Checking if $SERVICE_NAME is a Rollout or Deployment in namespace $NAMESPACE..."
+echo "Restarting all Rollouts and Deployments in namespace $NAMESPACE..."
 
-# Try Rollout first
-if kubectl get rollout "$SERVICE_NAME" -n "$NAMESPACE" > /dev/null 2>&1; then
-  echo "Found Rollout $SERVICE_NAME. Restarting via Argo Rollouts."
-  kubectl argo rollouts restart rollout "$SERVICE_NAME" -n "$NAMESPACE"
+# Restart all Rollouts
+ROLLOUTS=$(kubectl get rollouts -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}')
+for rollout in $ROLLOUTS; do
+  echo "Restarting Rollout: $rollout"
+  kubectl argo rollouts restart rollout "$rollout" -n "$NAMESPACE"
+done
 
-# Try Deployment next
-elif kubectl get deployment "$SERVICE_NAME" -n "$NAMESPACE" > /dev/null 2>&1; then
-  echo "Found Deployment $SERVICE_NAME. Restarting via kubectl rollout restart."
-  kubectl rollout restart deployment "$SERVICE_NAME" -n "$NAMESPACE"
+# Restart all Deployments
+DEPLOYMENTS=$(kubectl get deployments -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}')
+for deployment in $DEPLOYMENTS; do
+  echo "Restarting Deployment: $deployment"
+  kubectl rollout restart deployment "$deployment" -n "$NAMESPACE"
+done
 
-# Neither found
-else
-  echo "Neither Rollout nor Deployment named $SERVICE_NAME found in namespace $NAMESPACE."
-  exit 1
-fi
+echo "Restart commands issued for all Rollouts and Deployments in $NAMESPACE."
