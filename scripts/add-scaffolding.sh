@@ -63,7 +63,7 @@ for ENV in "${ENVIRONMENTS[@]}"; do
   SRC_FILE="${SRC_ARGO_DIR}/${ENV}.yaml"
   DST_FILE="${DST_ARGO_DIR}/${ENV}.yaml"
   if [ ! -f "$SRC_FILE" ]; then
-    echo "⚠Skipping Argo app $ENV: $SRC_FILE not found"
+    echo "Skipping Argo app $ENV: $SRC_FILE not found"
     continue
   fi
 

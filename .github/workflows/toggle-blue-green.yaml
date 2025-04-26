@@ -1,4 +1,4 @@
-name: Switch Blue/Green Color
+name: Toggle Blue Green Service Pointer
 
 on:
   workflow_dispatch:
@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repo
         uses: actions/checkout@v4
         with:
-          ref: main  # Or your target branch
-          persist-credentials: false  # 👈 disables the default token auth
+          ref: main
+          persist-credentials: false
 
-      - name: Set up Git identity
+      - name: Set up Git Identity
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
@@ -32,10 +32,10 @@ jobs:
           sudo chmod +x /usr/bin/yq
           yq --version
 
-      - name: Switch color for ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
-        run: ./scripts/switch-color.sh ${{ github.event.inputs.service }} ${{ github.event.inputs.environment }}
+      - name: Switch Color - ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
+        run: ./scripts/toggle-blue-green.sh ${{ github.event.inputs.service }} ${{ github.event.inputs.environment }}
 
-      - name: Push updated patch-service.yaml with PAT
+      - name: Push patch-service.yaml Update
         env:
           PAT_PUSH_TOKEN: ${{ secrets.REPO_PAT }}
         run: |

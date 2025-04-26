@@ -1,15 +1,15 @@
 name: Trigger QA Build Daily
 
 on:
-#  schedule:
-#    - cron: '0 1 * * *' # Every day at 01:00 UTC
+  schedule:
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 jobs:
   dispatch-qa-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Send repository_dispatch to caz-platform
+      - name: Send Dispatch Post to Start QA Build
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.REPO_PAT }}" \

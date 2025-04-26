@@ -27,10 +27,10 @@ on:
     inputs:
       environment:
         required: true
-        description: Environment (dev, qa, uat, prod)
+        description: Env (DEV, QA, UAT, PROD)
       service_name:
         required: false
-        description: Service Name (defaults to all)
+        description: Service (None for All)
 
 jobs:
   deploy-matrix:

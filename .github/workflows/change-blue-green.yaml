@@ -1,4 +1,4 @@
-name: Deploy Blue/Green Versions
+name: Deploy Blue/Green Version Changes
 
 on:
   release:
@@ -7,16 +7,16 @@ on:
     inputs:
       environment:
         required: true
-        description: Target environment (dev, qa, uat, prod)
+        description: Target Env (DEV, QA, UAT, PROD)
       service_name:
         required: true
-        description: Service name (e.g., alert-svc)
+        description: Service
       blue_tag:
         required: false
-        description: Image tag for blue deployment
+        description: Image Tag for Blue
       green_tag:
         required: false
-        description: Image tag for green deployment
+        description: Image Tag for Green
 
 jobs:
   update-blue-green:
@@ -32,13 +32,13 @@ jobs:
       GREEN_TAG: ${{ inputs.green_tag || github.event.release.tag_name }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repo
         uses: actions/checkout@v4
         with:
           ref: main
           persist-credentials: false
 
-      - name: Set up Git config
+      - name: Set up Git Config
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
@@ -48,17 +48,17 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      - name: Update blue deployment image (if blue_tag provided)
-        if: ${{ inputs.blue_tag != '' }}  # Only run if blue_tag is provided
+      - name: Update Blue Deployment Image (Optionally)
+        if: ${{ inputs.blue_tag != '' }}
         run: |
           yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.BLUE_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
 
-      - name: Update green deployment image (if green_tag provided or release)
-        if: ${{ inputs.green_tag != '' || github.event.release.tag_name }}  # Run if green_tag is provided OR it's a release event
+      - name: Update Green Deployment Image (if Provided or on Release)
+        if: ${{ inputs.green_tag != '' || github.event.release.tag_name }}
         run: |
           yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.GREEN_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-green.yaml
 
-      - name: Commit and Push Changes (if any changes were made)
+      - name: Commit and Push Changes
         if: ${{ inputs.blue_tag != '' || inputs.green_tag != '' || github.event.release.tag_name }}
         env:
           PAT_PUSH_TOKEN: ${{ secrets.REPO_PAT }}
