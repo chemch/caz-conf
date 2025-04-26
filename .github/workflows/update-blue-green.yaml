@@ -28,15 +28,15 @@ jobs:
       TAG_NAME: ${{ github.event.release.tag_name }}
       SERVICE_NAME: ${{ inputs.service_name || 'alert-svc' }}
       ENVIRONMENT: ${{ inputs.environment || 'prod' }}
-      BLUE_TAG: ${{ inputs.blue_tag || 'stable' }}
+      BLUE_TAG: ${{ inputs.blue_tag || '' }}  # Default to empty if not provided
       GREEN_TAG: ${{ inputs.green_tag || github.event.release.tag_name }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main  # Or your target branch
-          persist-credentials: false  # 👈 disables the default token auth
+          ref: main
+          persist-credentials: false
 
       - name: Set up Git config
         run: |
@@ -48,20 +48,23 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      - name: Update blue deployment image
+      - name: Update blue deployment image (if blue_tag provided)
+        if: ${{ inputs.blue_tag != '' }}  # Only run if blue_tag is provided
         run: |
           yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.BLUE_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
 
-      - name: Update green deployment image
+      - name: Update green deployment image (if green_tag provided or release)
+        if: ${{ inputs.green_tag != '' || github.event.release.tag_name }}  # Run if green_tag is provided OR it's a release event
         run: |
           yq eval '(.spec.template.spec.containers[] | select(.name == "${{ env.SERVICE_NAME }}").image) = "211125540194.dkr.ecr.us-east-1.amazonaws.com/${{ env.SERVICE_NAME }}:${{ env.GREEN_TAG }}"' -i base/${{ env.SERVICE_NAME }}/deployment-green.yaml
 
-      - name: Commit and Push Changes
+      - name: Commit and Push Changes (if any changes were made)
+        if: ${{ inputs.blue_tag != '' || inputs.green_tag != '' || github.event.release.tag_name }}
         env:
           PAT_PUSH_TOKEN: ${{ secrets.REPO_PAT }}
         run: |
           git remote set-url origin "https://x-access-token:${PAT_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
           git add base/${{ env.SERVICE_NAME }}/deployment-blue.yaml
           git add base/${{ env.SERVICE_NAME }}/deployment-green.yaml
-          git commit -m "🚀 $SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG"
+          git diff --quiet && git diff --staged --quiet || git commit -m "🚀 $SERVICE_NAME: blue=$BLUE_TAG, green=$GREEN_TAG"
           git push origin HEAD:main
