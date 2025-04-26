@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alert-svc
+  name: alert-svc-blue
 spec:
   replicas: 1
   template:
@@ -9,7 +9,7 @@ spec:
       containers:
         - name: alert-svc
           ports:
-            - containerPort: 7002
+            - containerPort: 5002
           env:
             - name: PORT
-              value: "7002"
+              value: "5002"

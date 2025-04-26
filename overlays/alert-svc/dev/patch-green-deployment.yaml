@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-svc-green
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: alert-svc
+          ports:
+            - containerPort: 5002
+          env:
+            - name: PORT
+              value: "5002"

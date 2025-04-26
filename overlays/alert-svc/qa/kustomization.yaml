@@ -5,8 +5,13 @@ resources:
 patches:
   - target:
       kind: Deployment
-      name: alert-svc
-    path: patch-deployment.yaml
+      name: alert-svc-blue
+    path: patch-blue-deployment.yaml
+
+  - target:
+      kind: Deployment
+      name: alert-svc-green
+    path: patch-green-deployment.yaml
 
   - target:
       kind: Service
