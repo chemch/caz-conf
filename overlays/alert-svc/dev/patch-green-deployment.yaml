@@ -13,4 +13,4 @@ spec:
           env:
             - name: PORT
               value: "5002"
-          image: 211125540194.dkr.ecr.us-east-1.amazonaws.com/alert-svc:dev_202504260300
+          image: 211125540194.dkr.ecr.us-east-1.amazonaws.com/alert-svc:dev_202504260806
