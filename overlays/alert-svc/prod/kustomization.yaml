@@ -6,7 +6,7 @@ patches:
   - target:
       kind: Deployment
       name: alert-svc
-    path: patch-deployment.yaml
+    path: patch-blue-deployment.yaml
 
   - target:
       kind: Service
