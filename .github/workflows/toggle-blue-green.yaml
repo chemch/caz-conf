@@ -7,7 +7,7 @@ on:
         description: "Service name (e.g. alert-svc)"
         required: true
       environment:
-        description: "Environment (e.g. qa, prod)"
+        description: "Environment (e.g. dev, qa, uat, prod)"
         required: true
 
 jobs:
@@ -34,6 +34,17 @@ jobs:
 
       - name: Switch Color - ${{ github.event.inputs.service }} in ${{ github.event.inputs.environment }}
         run: ./scripts/toggle-blue-green.sh ${{ github.event.inputs.service }} ${{ github.event.inputs.environment }}
+
+      - name: Update kubeconfig to connect to EKS
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
+
+      - name: Apply Updated Overlay
+        run: |
+          kubectl apply -k overlays/${{ github.event.inputs.service }}/${{ github.event.inputs.environment }}
 
       - name: Push patch-service.yaml Update
         env:
