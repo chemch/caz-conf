@@ -63,7 +63,7 @@ jobs:
           chmod +x kubectl-argo-rollouts-linux-amd64
           sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
       - run: chmod +x ./scripts/*.sh
-      - run: timeout 300 ./scripts/apply-service-config.sh "$SERVICE_NAME" "$ENVIRONMENT"
+      - run: ./scripts/apply-service-config.sh "$SERVICE_NAME" "$ENVIRONMENT"
       - run: ./scripts/restart-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
       - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
 
@@ -93,6 +93,6 @@ jobs:
           chmod +x kubectl-argo-rollouts-linux-amd64
           sudo mv kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
       - run: chmod +x ./scripts/*.sh
-      - run: timeout 300 ./scripts/apply-service-config.sh "$SERVICE_NAME" "$ENVIRONMENT"
+      - run: ./scripts/apply-service-config.sh "$SERVICE_NAME" "$ENVIRONMENT"
       - run: ./scripts/restart-service.sh "$SERVICE_NAME" "$ENVIRONMENT"
       - run: ./scripts/wait-for-deployment.sh "$SERVICE_NAME" "$ENVIRONMENT"
